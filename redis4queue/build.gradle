@@ -1,0 +1,10 @@
+bootJar{
+    enabled = false;
+}
+jar {
+    enabled = true;
+}
+
+dependencies {
+    implementation group: 'redis.clients', name: 'jedis', version: '2.9.0'
+}
