@@ -1,0 +1,8 @@
+websocket:
+  path: /wss
+
+ssl:
+  keystore:
+    path: /com.ccz.apps.jks
+    password: com.ccz.apps@pw
+

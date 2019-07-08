@@ -78,3 +78,23 @@ project(':redis4queue') {
     }
 }
 
+project(':biz-modoocom') {
+    dependencies {
+        compile project(':maple-common')
+        compile project(':redis4queue')
+    }
+}
+
+project(':biz-miss-saigon') {
+    dependencies {
+        compile project(':maple-common')
+        compile project(':redis4queue')
+    }
+}
+
+project(':biz-maple-syrup') {
+    dependencies {
+        compile project(':maple-common')
+        compile project(':redis4queue')
+    }
+}

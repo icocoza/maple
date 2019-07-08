@@ -1,0 +1,8 @@
+mysql:
+  url: 'jdbc:mysql://45.76.220.83/misssaigon?zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8&connectTimeout=3000&autoReconnect=true&serverTimezone=UTC&useSSL=false'
+  username: misssaigon
+  password: miss.saigon@pw
+  pollname: misssaigon
+
+
+

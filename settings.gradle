@@ -1,4 +1,4 @@
 rootProject.name = 'maple_server'
-include 'maple-common', 'maple-api', 'maple-web', 'redis4queue'
+include 'maple-common', 'maple-api', 'maple-web', 'redis4queue', 'biz-modoocom', 'biz-miss-saigon', 'biz-maple-syrup'
 
 

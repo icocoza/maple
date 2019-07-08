@@ -8,5 +8,6 @@ jar {
 dependencies {
     implementation('io.netty:netty-all:4.1.32.Final')
     implementation('com.google.guava:guava:23.6-jre')
+    implementation('mysql:mysql-connector-java:5.1.38')
 }
 

@@ -1,6 +1,6 @@
 package com.ccz.modules.server;
 
-import com.ccz.modules.server.handler.IServiceActionHandler;
+import com.ccz.modules.domain.inf.IServiceActionHandler;
 
 public class ServiceServerBuilder {
     private int port;

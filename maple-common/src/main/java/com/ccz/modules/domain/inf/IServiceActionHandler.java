@@ -1,4 +1,4 @@
-package com.ccz.modules.server.handler;
+package com.ccz.modules.domain.inf;
 
 import io.netty.channel.Channel;
 

@@ -8,6 +8,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/biz-maple-syrup" />
+            <option value="$PROJECT_DIR$/biz-miss-saigon" />
+            <option value="$PROJECT_DIR$/biz-modoocom" />
             <option value="$PROJECT_DIR$/maple-api" />
             <option value="$PROJECT_DIR$/maple-common" />
             <option value="$PROJECT_DIR$/maple-web" />
