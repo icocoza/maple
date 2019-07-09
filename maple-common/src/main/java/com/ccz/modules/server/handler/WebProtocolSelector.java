@@ -3,7 +3,7 @@ package com.ccz.modules.server.handler;
 import com.ccz.modules.domain.constant.EProtocolType;
 import com.ccz.modules.server.config.AttributeConfig;
 import com.ccz.modules.server.handler.protocol.IotHeaderValues;
-import com.ccz.modules.utils.KeyGen;
+import com.ccz.modules.common.utils.KeyGen;
 import com.google.common.base.Charsets;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.*;

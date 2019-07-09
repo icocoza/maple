@@ -1,7 +1,7 @@
 package com.ccz.modules.server.handler;
 
 import com.ccz.modules.domain.constant.EProtocolHeader;
-import com.ccz.modules.utils.StrUtils;
+import com.ccz.modules.common.utils.StrUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;

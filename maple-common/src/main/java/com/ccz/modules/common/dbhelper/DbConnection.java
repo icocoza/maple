@@ -1,4 +1,4 @@
-package com.ccz.modules.domain.dbhelper;
+package com.ccz.modules.common.dbhelper;
 
 import java.sql.Connection;
 import java.sql.SQLException;

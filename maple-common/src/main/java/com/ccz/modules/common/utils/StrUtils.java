@@ -1,4 +1,4 @@
-package com.ccz.modules.utils;
+package com.ccz.modules.common.utils;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.util.ByteProcessor;

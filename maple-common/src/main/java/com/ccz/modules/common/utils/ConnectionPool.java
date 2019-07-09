@@ -1,4 +1,4 @@
-package com.ccz.modules.utils;
+package com.ccz.modules.common.utils;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 

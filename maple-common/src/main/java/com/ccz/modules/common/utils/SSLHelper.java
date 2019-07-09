@@ -1,4 +1,4 @@
-package com.ccz.modules.utils;
+package com.ccz.modules.common.utils;
 
 import com.google.common.io.ByteStreams;
 import lombok.extern.slf4j.Slf4j;

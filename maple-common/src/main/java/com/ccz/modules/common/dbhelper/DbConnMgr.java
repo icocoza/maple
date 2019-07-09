@@ -1,4 +1,4 @@
-package com.ccz.modules.domain.dbhelper;
+package com.ccz.modules.common.dbhelper;
 
 import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;

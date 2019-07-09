@@ -1,7 +1,7 @@
 package com.ccz.modules.server.initializer;
 
 import com.ccz.modules.domain.inf.IServiceActionHandler;
-import com.ccz.modules.utils.SSLHelper;
+import com.ccz.modules.common.utils.SSLHelper;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.ssl.SslHandler;

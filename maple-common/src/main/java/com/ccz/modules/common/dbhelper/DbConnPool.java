@@ -1,6 +1,6 @@
-package com.ccz.modules.domain.dbhelper;
+package com.ccz.modules.common.dbhelper;
 
-import com.ccz.modules.utils.ConnectionPool;
+import com.ccz.modules.common.utils.ConnectionPool;
 import com.mysql.jdbc.Driver;
 
 import java.sql.SQLException;
