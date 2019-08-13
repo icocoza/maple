@@ -1,5 +1,8 @@
 package com.ccz.modules.common.utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 public class KeyGen {
@@ -20,4 +23,15 @@ public class KeyGen {
     public static String makeKey(String prefix, int seq) {    //ex, test:2cee287e-ef2e-4692-b6ad-910b0ab73984:0009
         return String.format("%s%s%04d", prefix, UUID.randomUUID(), seq % 10000);
     }
+
+    static public String makeKeyWithSeq(String prefix) {	//ex, test:2cee287e-ef2e-4692-b6ad-910b0ab73984:0009
+        return String.format("%s%s%04d", prefix, UUID.randomUUID().toString().replaceAll("-", ""), ++seq % 10000);
+    }
+    static public String makeKeyWithDate(String prefix) {	//ex, test:2cee287e-ef2e-4692-b6ad-910b0ab73984:0009
+        long time = System.currentTimeMillis();
+        SimpleDateFormat dayTime = new SimpleDateFormat("yyyyMMddhhmmss", Locale.KOREA);
+        String nowStr = dayTime.format(new Date(time));
+        return String.format("%s%s%s", prefix, UUID.randomUUID().toString().replaceAll("-", ""), nowStr);
+    }
+
 }

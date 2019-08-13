@@ -53,16 +53,15 @@ subprojects {
         implementation('com.fasterxml.jackson.core:jackson-core:2.9.8')
         implementation('com.fasterxml.jackson.core:jackson-annotations:2.9.8')
         implementation('com.fasterxml.jackson.core:jackson-databind:2.9.8')
-        implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.8"
-        implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.8'
     }
 
 }
 
 project(':maple-api') {
     dependencies {
-        compile project(':maple-common')
-        compile project(':redis4queue')
+        //compile project(':maple-common')
+        //compile project(':redis4queue')
+        compile project(':biz-miss-saigon')
     }
 }
 

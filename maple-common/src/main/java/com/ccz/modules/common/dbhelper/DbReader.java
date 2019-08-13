@@ -1,6 +1,8 @@
 package com.ccz.modules.common.dbhelper;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class DbReader {
 	private Statement stmt;
@@ -163,14 +165,17 @@ public class DbReader {
 		}
     }
 
-    public Date getDate2(String field)
+    public LocalDateTime getLocalDateTime(String field)
     {
         try
         {
-            return rs.getDate(field);
+            Timestamp timeStamp = rs.getTimestamp(field);
+            if(timeStamp != null)
+                timeStamp.toLocalDateTime();
+            return null;
         }
-        catch (SQLException e) { 
-			return null; 
+        catch (SQLException e) {
+			return null;
 		}
     }
 }

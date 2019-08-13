@@ -47,6 +47,8 @@ public class ServiceServer {
             }
         }).sync();
 
+        serviceActionHandler.start();
+
 //        List<String> nodeList = Arrays.asList(serverConfig.getSentinelNodes().split(",", -1));
 
 //        RedisCommandManager.getInst().initRedisSentinel(serverConfig.getSentinelMasterName(), nodeList, serverConfig.getSentinelPassword());
