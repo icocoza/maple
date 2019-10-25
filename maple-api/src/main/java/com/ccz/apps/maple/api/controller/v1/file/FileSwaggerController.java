@@ -16,14 +16,14 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 
 @Slf4j
-@Controller
-@Api(tags = "MissSaigon File APIs")
-@RequestMapping(value = "/api/v1/misssaigon/file", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RestController
+@Api(tags = "Maple File APIs")
+@RequestMapping(value = "/api/v1/maple/file", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class FileSwaggerController {
     private static String UPLOADED_FOLDER = "./upfiles";
 
     @Autowired
-    MapleServerHandler mapleServerHandler;
+    private MapleServerHandler mapleServerHandler;
 
     public FileSwaggerController() {
         File file = new File(UPLOADED_FOLDER);

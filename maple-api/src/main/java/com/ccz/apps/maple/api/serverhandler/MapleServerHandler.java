@@ -8,17 +8,20 @@ import com.ccz.modules.domain.constant.EAllError;
 import com.ccz.modules.domain.inf.ICommandFunction;
 import com.ccz.modules.domain.inf.IServiceActionHandler;
 import com.ccz.modules.domain.session.AuthSession;
+import com.ccz.modules.server.service.DbScodeManager;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
-@Service
+@Component
 public class MapleServerHandler implements IServiceActionHandler {
 
     @Autowired
@@ -55,9 +58,19 @@ public class MapleServerHandler implements IServiceActionHandler {
                 authSession = new AuthSession(ch);
             }
         }
+
         ResponseData<EAllError> res = new ResponseData<EAllError>(form.getScode(), form.getCmd());
-        String serviceCmd = getServiceCommand(form);
-        ICommandFunction func = cmdFuncMap.get(serviceCmd);
+        try {
+            if(DbScodeManager.getInst().initDbForServiceCode(form.getScode()) == false) {
+                res.setError(EAllError.not_exist_scode).setParam("scode", form.getScode());
+                return res.toJsonString();
+            }
+        }catch (Exception e) {
+            res.setError(EAllError.unknown_error).setParam("result", e.getMessage());
+            return res.toJsonString();
+        }
+
+        ICommandFunction func = cmdFuncMap.get(form.getCmd());
         if(func == null) {
             return "Unknown Command";
         }
@@ -70,7 +83,4 @@ public class MapleServerHandler implements IServiceActionHandler {
 
     }
 
-    private String getServiceCommand(CommonForm form) {
-        return form.getScode() +":"+ form.getCmd();
-    }
 }

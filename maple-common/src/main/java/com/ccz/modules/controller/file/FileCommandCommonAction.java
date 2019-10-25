@@ -17,6 +17,7 @@ import com.ccz.modules.repository.db.user.UserCommonRepository;
 import com.ccz.modules.server.config.FileConfig;
 import com.ccz.modules.controller.file.FileForm.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -48,12 +49,12 @@ public class FileCommandCommonAction extends CommandAction {
 
     @Override
     public String makeCommandId(Enum e) {
-        return fileCommonRepository.getPoolName() + ":" + e.name();
+        return  "" + e.name();
     }
 
     ICommandFunction<AuthSession, ResponseData<EAllError>, FileForm.UploadForm> doUploadFile = (AuthSession authSession, ResponseData<EAllError> res, FileForm.UploadForm form) -> {
         List<FileResult> fileIds = new ArrayList<>();
-        String fileId = uploadFile(form.getMultipartFile(), form.getUserName(), form.getUploadDir(), form.getServerIp(), form.getComment());
+        String fileId = uploadFile(form.getMultipartFile(), form.getScode(), form.getUserName(), form.getUploadDir(), form.getServerIp(), form.getComment());
         fileIds.add(new FileForm().new FileResult(form.getMultipartFile().getOriginalFilename(), fileId));
         res.setParam("fileIds", fileIds);
         return res.setError(EAllError.ok);
@@ -63,7 +64,7 @@ public class FileCommandCommonAction extends CommandAction {
         List<MultipartFile> files = form.getMultipartFiles();
         List<FileResult> fileIds = new ArrayList<>();
         for(MultipartFile file : files) {
-            String fileId = uploadFile(file, form.getUserName(), form.getUploadDir(), form.getServerIp(), form.getComment());
+            String fileId = uploadFile(file, form.getScode(), form.getUserName(), form.getUploadDir(), form.getServerIp(), form.getComment());
             fileIds.add(new FileForm().new FileResult(file.getOriginalFilename(), fileId));
         }
         res.setParam("fileIds", fileIds);
@@ -71,9 +72,9 @@ public class FileCommandCommonAction extends CommandAction {
     };
 
 
-    private String uploadFile(MultipartFile file, String userName, String uploadDir, String serverIp, String comment) {
+    private String uploadFile(MultipartFile file, String scode, String userName, String uploadDir, String serverIp, String comment) {
         String fileId = StrUtils.getUuid("file");
-        Path savePath = Paths.get(uploadDir, fileCommonRepository.getPoolName(), fileId);
+        Path savePath = Paths.get(uploadDir, scode, fileId);
 
         try {
             file.transferTo(savePath);
@@ -83,10 +84,10 @@ public class FileCommandCommonAction extends CommandAction {
 
         List<String> queries = new ArrayList<>();
 
-        String userId = userCommonRepository.findUserIdByUserName(userName);
+        String userId = userCommonRepository.findUserIdByUserName(scode, userName);
         Long fileSize = file.getSize();
         EUploadFileType eType = EUploadFileType.getType(FileUtils.getFileExt(file.getOriginalFilename()));;
-        queries.add(fileCommonRepository.queryInitFileInfo(fileId, userId, serverIp, userName, eType.getValue(), fileSize, comment));
+        queries.add(fileCommonRepository.queryInitFileInfo(scode, fileId, userId, serverIp, userName, eType.getValue(), fileSize, comment));
 
         ImageUtil.ImageSize imageSize = null;
         try {
@@ -94,14 +95,14 @@ public class FileCommandCommonAction extends CommandAction {
         } catch (IOException e) {
             return null;
         }
-        queries.add(fileCommonRepository.queryUpdateFileInfo(fileId, imageSize.getWidth(), imageSize.getWidth(), fileSize));
+        queries.add(fileCommonRepository.queryUpdateFileInfo(scode, fileId, imageSize.getWidth(), imageSize.getWidth(), fileSize));
 
 
         float rate = imageSize.getWidth() > imageSize.getHeight()? FileConfig.THUMB_SIZE / (float)imageSize.getWidth() : FileConfig.THUMB_SIZE / (float)imageSize.getHeight();
         String thumbName = newThumbFilename();
         int thumbWidth = (int)(imageSize.getWidth() * rate);
         int thumbHeight = (int)(imageSize.getHeight() * rate);
-        String thumbFilePath = getThumbPath(thumbName);
+        String thumbFilePath = getThumbPath(scode, thumbName);
 
         imageResizeWorker.doResize(savePath.toString(), thumbFilePath, thumbWidth, thumbHeight, new ImageResizeWorker.ImageResizerCallback() {
             @Override
@@ -114,8 +115,8 @@ public class FileCommandCommonAction extends CommandAction {
                 log.error("Failed - " + src);
             }
         });
-        queries.add(fileCommonRepository.queryUpdateThumbnail(fileId, thumbName, thumbWidth, thumbHeight));
-        fileCommonRepository.multiQueries(queries);
+        queries.add(fileCommonRepository.queryUpdateThumbnail(scode, fileId, thumbName, thumbWidth, thumbHeight));
+        fileCommonRepository.multiQueries(scode, queries);
         return fileId;
     }
 
@@ -124,8 +125,8 @@ public class FileCommandCommonAction extends CommandAction {
         return String.format("%s%d_%03d", FileConfig.THUMB_PATH, System.currentTimeMillis(), ++seq % 1000);
     }
 
-    private String getThumbPath(String fileName) {
-        return Paths.get(FileConfig.UPLOADED_FOLDER, fileCommonRepository.getPoolName(), FileConfig.THUMB_PATH, fileName).toString();
+    private String getThumbPath(String scode, String fileName) {
+        return Paths.get(FileConfig.UPLOADED_FOLDER, scode, FileConfig.THUMB_PATH, fileName).toString();
     }
 
 }

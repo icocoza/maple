@@ -6,7 +6,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class ImageResizeWorker {
-    public final int THREADCOUNT = 20;
+    public final int THREAD_COUNT = 20;
     
     Executor executor = null;
     public interface ImageResizerCallback {
@@ -15,7 +15,7 @@ public class ImageResizeWorker {
     }
     
     public ImageResizeWorker() {
-    	executor = Executors.newFixedThreadPool(THREADCOUNT);
+    	executor = Executors.newFixedThreadPool(THREAD_COUNT);
     }
 
     public void doResize(final String src, final String dest, final int width, final int height, final ImageResizerCallback cb) {

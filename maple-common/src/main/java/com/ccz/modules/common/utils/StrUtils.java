@@ -7,8 +7,25 @@ import org.apache.commons.codec.digest.DigestUtils;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StrUtils {
+
+    private static final String URL_PATTERN = "\\(?\\b((http|https)://|www[.])[-A-Za-z0-9+&amp;@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&amp;@#/%=~_()|]";
+    public static List<String> extractUrls(String text) {
+        ArrayList<String> links = new ArrayList<>();
+
+        Pattern p = Pattern.compile(URL_PATTERN);
+        Matcher m = p.matcher(text);
+        while(m.find()) {
+            String urlStr = m.group();
+            if (urlStr.startsWith("(") && urlStr.endsWith(")"))
+                urlStr = urlStr.substring(1, urlStr.length() - 1);
+            links.add(urlStr);
+        }
+        return links;
+    }
 
     public static int findEndOfLine(final ByteBuf buffer) {
         int totalLength = buffer.readableBytes();
@@ -112,4 +129,5 @@ public class StrUtils {
     static public String getUuid(String prefix) {
         return prefix + UUID.randomUUID().toString().replaceAll("-", "");
     }
+
 }

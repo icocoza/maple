@@ -24,6 +24,8 @@ public class FileForm {
             super.setCmd("uploadFile");
         }
 
+        private String scode;
+
         @ApiModelProperty(value = "업로딩 파일", example = "업로딩 파일", required = true)
         private MultipartFile multipartFile;
 
@@ -50,6 +52,9 @@ public class FileForm {
         public MultiUploadForm() {
             super.setCmd("multiUploadFile");
         }
+
+        private String scode;
+
         @ApiModelProperty(value = "업로딩 멀티 파일", example = "업로딩 멀티 파일", required = true)
         private List<MultipartFile> multipartFiles;
 

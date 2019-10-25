@@ -1,23 +1,19 @@
-bootJar{
-    enabled = true;
+bootJar {
+    enabled = false
 }
+
 jar {
-    enabled = false;
+    enabled = true
 }
-
 dependencies {
-    compile project(':maple-common')
-
-    compile('org.springframework.boot:spring-boot-starter-actuator')
-    compile('org.springframework.boot:spring-boot-starter-web')
-
+    implementation('org.springframework.boot:spring-boot-starter-actuator')
+    implementation('org.springframework.boot:spring-boot-starter-web')
     implementation("org.slf4j:slf4j-api:1.7.21")
-
-    implementation ('io.springfox:springfox-swagger2:2.8.0')
-    implementation ('io.springfox:springfox-swagger-ui:2.8.0')
-
+    implementation('io.springfox:springfox-swagger2:2.7.0')
+    implementation('io.springfox:springfox-swagger-ui:2.7.0')
     implementation('io.netty:netty-all:4.1.32.Final')
 
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile project(':biz-miss-saigon')
+    compile project(':maple-common')
 
 }

@@ -68,8 +68,10 @@ public enum EAllError {
 
 	/*for the add app*/
 	already_exist_scode,
+	not_exist_scode,
 	scode_allowed_only_alphabet,
 	failed_to_create_app_database,
+	invalid_db_parameter,
 	failed_to_add_app,
 
 	eWrongAccountInfo,
@@ -181,7 +183,10 @@ public enum EAllError {
 	eFailToUpdateChannel,
 
 	eNoServiceCommand,
-	
+
+	unauthorized_user,
+	unauthorized_or_expired_user,
+
 	unknown_error
 	
 

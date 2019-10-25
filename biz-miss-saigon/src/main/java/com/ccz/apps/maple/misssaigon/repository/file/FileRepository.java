@@ -21,27 +21,26 @@ public class FileRepository  extends FileCommonRepository {
     @Autowired
     MissSaigonConfig missSaigonConfig;
 
-    @Override
     public String getPoolName() {
-        return missSaigonConfig.getPoolname();
+        return missSaigonConfig.getPoolName();
     }
 
     @PostConstruct
     public void init() {
-        File uploadDir = new File(missSaigonConfig.getUploadPath(missSaigonConfig.getPoolname()));
+        File uploadDir = new File(missSaigonConfig.getUploadPath(missSaigonConfig.getPoolName()));
         if(uploadDir.exists() == false)
             uploadDir.mkdirs();
-        File thumbDir = new File(missSaigonConfig.getThumbPath(missSaigonConfig.getPoolname()));
+        File thumbDir = new File(missSaigonConfig.getThumbPath(missSaigonConfig.getPoolName()));
         if(thumbDir.exists() == false)
             thumbDir.mkdirs();
-        File cropDir = new File(missSaigonConfig.getCropPath(missSaigonConfig.getPoolname()));
+        File cropDir = new File(missSaigonConfig.getCropPath(missSaigonConfig.getPoolName()));
         if(cropDir.exists() == false)
             cropDir.mkdirs();
     }
 
 
     public UploadCropRec getCropFile(String boardid) {
-        return new UploadCropRec(missSaigonConfig.getPoolname()).getFile(boardid);
+        return new UploadCropRec(missSaigonConfig.getPoolName()).getFile(boardid);
     }
 
 }

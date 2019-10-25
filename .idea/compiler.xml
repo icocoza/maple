@@ -5,7 +5,23 @@
       <profile default="true" name="Default" enabled="true" />
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="maple_server.biz-maple-syrup.main" target="1.8" />
+      <module name="maple_server.biz-maple-syrup.test" target="1.8" />
+      <module name="maple_server.biz-miss-saigon.main" target="1.8" />
+      <module name="maple_server.biz-miss-saigon.test" target="1.8" />
+      <module name="maple_server.biz-modoocom.main" target="1.8" />
+      <module name="maple_server.biz-modoocom.test" target="1.8" />
       <module name="maple_server.main" target="1.8" />
+      <module name="maple_server.maple-api.main" target="1.8" />
+      <module name="maple_server.maple-api.test" target="1.8" />
+      <module name="maple_server.maple-common.main" target="1.8" />
+      <module name="maple_server.maple-common.test" target="1.8" />
+      <module name="maple_server.maple-web.main" target="1.8" />
+      <module name="maple_server.maple-web.test" target="1.8" />
+      <module name="maple_server.redis4queue.main" target="1.8" />
+      <module name="maple_server.redis4queue.test" target="1.8" />
+      <module name="maple_server.stubbornjava-private.main" target="1.8" />
+      <module name="maple_server.stubbornjava-private.test" target="1.8" />
       <module name="maple_server.test" target="1.8" />
     </bytecodeTargetLevel>
   </component>

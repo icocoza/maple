@@ -1,11 +1,16 @@
-bootJar{
-    enabled = false;
+bootJar {
+    enabled = false
 }
+
 jar {
-    enabled = true;
+    enabled = true
 }
 
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-web')
+    implementation ('io.springfox:springfox-swagger2:2.8.0')
+    implementation ('io.springfox:springfox-swagger-ui:2.8.0')
+    implementation ('org.springframework.boot:spring-boot-starter-web')
+
+    compile project(':maple-common')
 }
 

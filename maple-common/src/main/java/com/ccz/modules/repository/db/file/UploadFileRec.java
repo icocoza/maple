@@ -83,7 +83,7 @@ public class UploadFileRec extends DbRecord {
 	}
 
 	public static String qInitFileInfo(String fileId, String userId, String fileServer, String fileName, String fileType, long fileSize, String comment) {
-		return String.format("INSERT INTO uploadfile (fileId, userId, fileServer, fileName, fileType, fileSize, comment) VALUES('%s', '%s', '%s', '%s', '%s', %d, '%s')",
+		return String.format("INSERT INTO uploadFile (fileId, userId, fileServer, fileName, fileType, fileSize, comment) VALUES('%s', '%s', '%s', '%s', '%s', %d, '%s')",
 				fileId, userId, fileServer, fileName, fileType, fileSize, comment);
 	}
 	
@@ -98,17 +98,17 @@ public class UploadFileRec extends DbRecord {
 	}
 
 	public static String qUpdateFileInfo(String fileId, int width, int height, long fileSize) {
-		return String.format("UPDATE uploadfile SET width=%d, height=%d, fileSize=%d, uploaded=true WHERE fileId='%s'",
+		return String.format("UPDATE uploadFile SET width=%d, height=%d, fileSize=%d, uploaded=true WHERE fileId='%s'",
 				width, height, fileSize, fileId);
 	}
 	
 	public boolean updateFileEnabled(String fileId, String boardId, boolean enabled) {
-		String sql = String.format("UPDATE uploadfile SET boardId='%s', enabled=%b, deleted=false, deletedAt=null WHERE fileId='%s' AND uploaded=true", boardId, enabled, fileId);
+		String sql = String.format("UPDATE uploadFile SET boardId='%s', enabled=%b, deleted=false, deletedAt=null WHERE fileId='%s' AND uploaded=true", boardId, enabled, fileId);
 		return super.update(sql);
 	}
 	public boolean updateFilesEnabled(List<String> fileids, String boardId, boolean enabled) {
 		String filestr = fileids.stream().map(x -> "'"+x+"'").collect(Collectors.joining(","));
-		String sql = String.format("UPDATE uploadfile SET boardId='%s', enabled=%b, deleted=false, deletedAt=null WHERE fileId IN(%s) AND uploaded=true", boardId, enabled, filestr);
+		String sql = String.format("UPDATE uploadFile SET boardId='%s', enabled=%b, deleted=false, deletedAt=null WHERE fileId IN(%s) AND uploaded=true", boardId, enabled, filestr);
 		return super.update(sql);
 	}
 
@@ -118,27 +118,27 @@ public class UploadFileRec extends DbRecord {
 	}
 
 	public static String qUpdateThumbnail(String fileId, String thumbName, int thumbWidth, int thumbHeight) {
-		return String.format("UPDATE uploadfile SET thumbName='%s', thumbWidth=%d, thumbHeight=%d WHERE fileId='%s'",
+		return String.format("UPDATE uploadFile SET thumbName='%s', thumbWidth=%d, thumbHeight=%d WHERE fileId='%s'",
 				thumbName, thumbWidth, thumbHeight, fileId);
 	}
 
 	public boolean updateDeleteFile(String boardId) {
-		String sql = String.format("UPDATE uploadfile SET deleted=true, deletedAt=NOW() WHERE boardId='%s'", boardId);
+		String sql = String.format("UPDATE uploadFile SET deleted=true, deletedAt=NOW() WHERE boardId='%s'", boardId);
 		return super.update(sql);
 	}
 
 	public boolean delete(String fileId) {
-		String sql = String.format("DELETE FROM uploadfile WHERE fileId='%s'", fileId);
+		String sql = String.format("DELETE FROM uploadFile WHERE fileId='%s'", fileId);
 		return super.delete(sql);
 	}
 
 	public UploadFileRec getFile(String fileId) {
-		String sql = String.format("SELECT * FROM uploadfile WHERE fileId='%s'", fileId);
+		String sql = String.format("SELECT * FROM uploadFile WHERE fileId='%s'", fileId);
 		return (UploadFileRec) super.getOne(sql);
 	}
 	
 	public List<UploadFileRec> getFileList(String boardId) {
-		String sql = String.format("SELECT * FROM uploadfile WHERE boardId='%s' AND deleted=false", boardId);
+		String sql = String.format("SELECT * FROM uploadFile WHERE boardId='%s' AND deleted=false", boardId);
 		return super.getList(sql).stream().map(e -> (UploadFileRec)e).collect(Collectors.toList());
 	}
 }

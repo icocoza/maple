@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class CommonForm {
 
-    @ApiModelProperty(value="Service Code", example="misssaigon", required=true)
+    @ApiModelProperty(value="Service Code", example="maple", required=true)
     private String scode;
     @ApiModelProperty(value="Command", example="signin", required=true)
     private String cmd;

@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@Api(tags = "MissSaigon User APIs")
-@RequestMapping(value = "/api/v1/misssaigon/user", produces = {MediaType.APPLICATION_JSON_VALUE})
+@Api(tags = "Maple User APIs")
+@RequestMapping(value = "/api/v1/maple/user", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class UserSwaggerController {
     @Autowired
-    MapleServerHandler mapleServerHandler;
+    private MapleServerHandler mapleServerHandler;
 
     @ApiOperation(value = "사용자 아이디 조회", notes = "사용자 아이디 조회", response = String.class)
     @RequestMapping(value = "/findByUserName", method = {RequestMethod.GET})

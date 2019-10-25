@@ -4,6 +4,7 @@ import com.ccz.modules.common.utils.ImageResizeWorker;
 import com.ccz.modules.common.utils.ImageUtil;
 import com.ccz.modules.common.utils.StrUtils;
 import com.ccz.modules.repository.db.file.UploadFileRec;
+import com.ccz.modules.server.config.FileConfig;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,8 +12,6 @@ import java.io.IOException;
 
 public class UploadFile {
 	static final float THUMB_SIZE=480;
-	public static final String THUMB_PATH = "thumb";
-	public static final String CROP_PATH = "crop";
 
 	static int seq=0;
 
@@ -101,21 +100,21 @@ public class UploadFile {
 	public static int getSeq() {	return ++seq % 1000; }
 	
 	public static String newThumbFilename() {
-		 return String.format("%s%d_%03d", THUMB_PATH, System.currentTimeMillis(), getSeq());
+		 return String.format("%s%d_%03d", FileConfig.THUMB_PATH, System.currentTimeMillis(), getSeq());
 	}
 	public static String getThumbPath(String scode, String uploadPath) {
-		return uploadPath +"/"+ scode +"/" + THUMB_PATH +"/";
+		return uploadPath +"/"+ scode +"/" + FileConfig.THUMB_PATH +"/";
 	}
 	
 	public static String newCropFilename() {
-		 return String.format("%s%d_%03d", CROP_PATH, System.currentTimeMillis(), getSeq());
+		 return String.format("%s%d_%03d", FileConfig.CROP_PATH, System.currentTimeMillis(), getSeq());
 	}
 	public static String newCropFilename(String name) {
-		 return String.format("%s%s", CROP_PATH, name);
+		 return String.format("%s%s", FileConfig.CROP_PATH, name);
 	}
 
 	public static String getCropPath(String scode, String uploadPath) {
-		return uploadPath +"/"+ scode +"/" + CROP_PATH +"/";
+		return uploadPath +"/"+ scode +"/" + FileConfig.CROP_PATH +"/";
 	}
 
 }

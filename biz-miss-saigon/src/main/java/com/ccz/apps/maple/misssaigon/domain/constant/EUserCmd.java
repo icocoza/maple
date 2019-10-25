@@ -11,8 +11,8 @@ public enum EUserCmd {
     changePw("changePw"), updateEmail("updateEmail"), updatePhone("updatePhone"), verifyEmail("verifyEmail"), verifySms("verifySms"),
     anonymousLogin("anonymousLogin"), anonymousSignin("anonymousSignin"), findId("findId"), none("none");
 
-    @Getter private final String value;
-    @Getter private final boolean needSession;
+    private final String value;
+    private final boolean needSession;
 
     private EUserCmd(String value) {
         this.value = value;

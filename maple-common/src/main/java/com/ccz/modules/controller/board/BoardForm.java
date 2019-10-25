@@ -1,70 +1,151 @@
 package com.ccz.modules.controller.board;
 
 import com.ccz.modules.controller.common.CommonForm;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import com.ccz.modules.domain.constant.EBoardContentType;
+import com.ccz.modules.domain.constant.EBoardPreferences;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 public class BoardForm {
 
-    @ApiModel(description = "Board 아이템 추가 Form")
     @Data
     public class AddBoardForm extends CommonForm {
-        @ApiModelProperty(value="Name or Title", example="Name of something", required=true)
+        private String userName;
         private String title;
+        private String content;
+        private EBoardContentType contentType;
+        private String category = "none";
+        private boolean hasImage;
+        private boolean hasFile;
 
-        @ApiModelProperty(value="Address", example="Address", required=true)
-        private String address;
+        private List<String> fileIds;
+    }
 
-        @ApiModelProperty(value="Description", example="Description", required=true)
-        private String description;
+    @Data
+    public class BoardIdForm extends CommonForm {
+        private String boardId;
+        private String userName;
+    }
 
-        @ApiModelProperty(value="Convenient Facilities", example="Convenient Facilities", required=true)
-        private List<String> facilities;    // ID발급해서 Enum 할당해야 함
+    @Data
+    public class DelBoardForm extends BoardIdForm {
+        ;
+    }
 
-        @ApiModelProperty(value="Convenient Comment", example="Convenient Comment", required=true)
-        private List<String> convenientComment;    // Convenient Comment
+    @Data
+    public class UpdateTitleForm extends BoardIdForm {
+        private String title;
+    }
 
-        @ApiModelProperty(value="Operation Guides", example="Operation Guides", required=true)
-        private List<String> guides;    // Convenient Comment
+    @Data
+    public class UpdateContentForm extends BoardIdForm {
+        private String content;
+        private boolean hasImage;
+        private boolean hasFile;
+    }
 
-        @ApiModelProperty(value="Operation rules", example="Operation rules", required=true)
-        private List<String> rules;    // Convenient Rules
+    @Data
+    public class UpdateCategoryForm extends BoardIdForm {
+        private String category;
+    }
 
-        @ApiModelProperty(value="Longitude", example="Longitude", required=true)
-        private Double logitude;
+    @Data
+    public class UpdateBoardForm extends AddBoardForm {
+        private String boardId;
+    }
 
-        @ApiModelProperty(value="Latitude", example="Latitude", required=true)
-        private Double latitude;
+    @Data
+    public class BoardListForm extends CommonForm {
+        private String category = "none";
+        private String userName;
+        private int offset;
+        private int count;
 
-        @ApiModelProperty(value="how to find", example="how to find", required=true)
-        private String howToFind;   //찾아오는 길
+    }
 
-        /*
-        이름
-주소
-소개
-편의시설 및 서비스 - 목록
-편의시설 및 서비스 - 코멘트
-이용안내 - 공지사항
-이용안내 - 기본규정
-gps
-찾아오는 길 --
-숙소주변 레져/티켓
-후기 - 별점
-후기 - 글목록
-후기 - 사진
-사진 - 소개
-사진 - 방
-방 - 사진/종류
-방 - 인원 수
-방 - 가격 / 대실, 숙박
+    @Data
+    public class BoardContentForm extends BoardIdForm {
+    }
 
-        * */
+    @Data
+    public class BoardLikeForm extends BoardIdForm {
+        private EBoardPreferences preferences;
+        private boolean added;
+    }
+
+    @Data
+    public class BoardDislikeForm extends BoardLikeForm {
+    }
+
+    @Data
+    public class AddReplyForm extends BoardIdForm {
+        private String parentReplyId = "0";
+        private int depth;
+        private String body;
+    }
+
+    @Data
+    public class DelReplyForm extends BoardIdForm {
+        private String replyId;
+    }
+
+    @Data
+    public class ReplyListForm extends BoardIdForm {
+        private int offset;
+        private int count;
+    }
+
+    //for vote
+    @Data
+    public class AddVoteForm extends AddBoardForm {
+        private LocalDateTime expiredAt;
+        public List<String> itemList = new ArrayList<>();
+    }
+
+    @Data
+    public class VoteItemListForm extends BoardIdForm {
+    }
+
+    @Data
+    public class SelectVoteItemForm extends BoardIdForm {
+        private String voteItemId;
+        private boolean selected;
+    }
+
+    @Data
+    public class VoteUpdateForm extends BoardIdForm {
+        private LocalDateTime expiredAt;
+        private Boolean closed;
+        private List<VoteItemData> voteItems;
+    }
+
+    @Data
+    public class VoteChangeForm extends BoardIdForm {
+        private String voteItemId;
+    }
+
+    @Data
+    public class VoteInfoListForm extends BoardIdForm {
+        private List<String> boardIds;
+    }
+
+    @Data
+    public class BoardSearch extends BoardIdForm {
+        private String searchWord;
+        private int offset;
+        private int count;
+    }
+
+    ////inner data////
+    @Data
+    public class VoteItemData {
+        private String voteItemId;
+        private String voteText;
     }
 
 }

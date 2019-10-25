@@ -2,24 +2,25 @@ package com.ccz.modules.repository.db.user;
 
 import com.ccz.modules.common.dbhelper.DbReader;
 import com.ccz.modules.common.dbhelper.DbRecord;
+import lombok.Data;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Getter
+@Data
 public class UserRec extends DbRecord {
 
-    public String userId;
-    public String userName;
-    public boolean anonymous;
-    public String osType;
-    public String osVersion;
-    public String  appVersion;
-    public String inAppcode;
-    public LocalDateTime createdAt;
-    public LocalDateTime leftAt;
-    public LocalDateTime lastAt;
-    public int likes, dislikes;
+    private String userId;
+    private String userName;
+    private boolean anonymous;
+    private String osType;
+    private String osVersion;
+    private String  appVersion;
+    private String inAppcode;
+    private LocalDateTime createdAt;
+    private LocalDateTime leftAt;
+    private LocalDateTime lastAt;
+    private int likes, dislikes;
 
     public UserRec(String poolName) {
         super(poolName);

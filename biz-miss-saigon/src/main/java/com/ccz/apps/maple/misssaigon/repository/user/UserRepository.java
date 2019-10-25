@@ -14,8 +14,7 @@ public class UserRepository extends UserCommonRepository {
     private UserRepository() {
     }
 
-    @Override
     public String getPoolName() {
-        return missSaigonConfig.getPoolname();
+        return missSaigonConfig.getPoolName();
     }
 }

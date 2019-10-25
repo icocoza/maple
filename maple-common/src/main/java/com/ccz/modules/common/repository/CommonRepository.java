@@ -6,10 +6,10 @@ import java.util.List;
 
 public abstract class CommonRepository {
 
-    public abstract String getPoolName();
-
-    public boolean multiQueries(List<String> queries) {
-        return DbHelper.multiQuery(getPoolName(), queries.toArray(new String[queries.size()]));
+    public boolean multiQueries(String scode, List<String> queries) {
+        if(queries == null || queries.size() < 1)
+            return false;
+        return DbHelper.multiQuery(scode, queries.toArray(new String[queries.size()]));
     }
 
 }

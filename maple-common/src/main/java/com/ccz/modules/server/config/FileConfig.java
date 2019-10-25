@@ -6,6 +6,7 @@ public class FileConfig {
 
     public static final float THUMB_SIZE=480;
     public static final String THUMB_PATH = "thumb";
+    public static final String SCRAP_PATH = "scrap";
     public static final String CROP_PATH = "crop";
 
 }

@@ -11,9 +11,8 @@ public class BoardRepository extends BoardCommonRepository {
     @Autowired
     MissSaigonConfig missSaigonConfig;
 
-    @Override
     public String getPoolName() {
-        return missSaigonConfig.getPoolname();
+        return missSaigonConfig.getPoolName();
     }
 
 }

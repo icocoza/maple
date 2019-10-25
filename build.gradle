@@ -1,51 +1,39 @@
 buildscript {
-
+    repositories {
+        mavenCentral()
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
+    }
     ext {
         springBootVersion = '2.1.2.RELEASE'
     }
-
-    repositories {
-        mavenCentral()
-        maven { url 'http://repo.spring.io/plugins-release' }
-        maven { url "https://plugins.gradle.org/m2/" }
-    }
-
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath "io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE"
-        classpath 'ch.qos.logback:logback-classic:1.2.3'
     }
 }
 
-subprojects {
-    apply plugin: 'java'
-    apply plugin: 'eclipse'
-    apply plugin: 'org.springframework.boot'
-    apply plugin: 'io.spring.dependency-management'
+apply plugin: 'idea'
 
-    group 'com.ccz.apps.maple'
-    version '0.0.1'
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: "io.spring.dependency-management"
+
+    group = "com.ccz.apps.maple"
+    version "0.0.1-SNAPSHOT"
+
     sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
     repositories {
         mavenCentral()
-    }
-
-    task initSourceFolders {
-        sourceSets*.java.srcDirs*.each {
-            if( !it.exists() ) {
-                it.mkdirs()
-            }
-        }
-
-        sourceSets*.resources.srcDirs*.each {
-            if( !it.exists() ) {
-                it.mkdirs()
-            }
-        }
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
     }
 
     dependencies {
+        testCompile('org.springframework.boot:spring-boot-starter-test')
+        implementation("io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE")
         annotationProcessor("org.projectlombok:lombok:1.16.20")
         compileOnly("org.projectlombok:lombok:1.16.20")
         implementation('org.modelmapper:modelmapper:0.7.5')
@@ -53,47 +41,24 @@ subprojects {
         implementation('com.fasterxml.jackson.core:jackson-core:2.9.8')
         implementation('com.fasterxml.jackson.core:jackson-annotations:2.9.8')
         implementation('com.fasterxml.jackson.core:jackson-databind:2.9.8')
-    }
 
-}
-
-project(':maple-api') {
-    dependencies {
-        //compile project(':maple-common')
-        //compile project(':redis4queue')
-        compile project(':biz-miss-saigon')
     }
 }
 
-project(':maple-web') {
-    dependencies {
-        compile project(':maple-common')
-    }
+dependencies {
+    compile project(':maple-common')
+    compile project(':maple-api')
+    compile project(':biz-miss-saigon')
+    compile project(':redis4queue')
 }
 
-project(':redis4queue') {
-    dependencies {
-        compile project(':maple-common')
-    }
+jar {
+    baseName = 'maple-jar'
+    version = '0.0.1-SNAPSHOT'
 }
 
-project(':biz-modoocom') {
-    dependencies {
-        compile project(':maple-common')
-        compile project(':redis4queue')
-    }
+springBoot {
+    mainClassName = 'com.ccz.apps.maple.api.MainApplication'
 }
 
-project(':biz-miss-saigon') {
-    dependencies {
-        compile project(':maple-common')
-        compile project(':redis4queue')
-    }
-}
 
-project(':biz-maple-syrup') {
-    dependencies {
-        compile project(':maple-common')
-        compile project(':redis4queue')
-    }
-}

@@ -9,7 +9,9 @@ public enum EUserCmd {
 
     regIdPw("regIdPw"), regEmail("regEmail"), regPhone("regPhone"), login("login"), signIn("signIn"),
     changePw("changePw"), updateEmail("updateEmail"), updatePhone("updatePhone"), verifyEmail("verifyEmail"), verifySms("verifySms"),
-    anonymousLogin("anonymousLogin"), anonymousSignin("anonymousSignin"), findId("findId"), none("none");
+    anonymousLogin("anonymousLogin"), anonymousSignin("anonymousSignin"), findId("findId"), none("none"),
+
+    oAuthFaebookJoin("oAuthFaebookJoin"), oAuthFaebookSignIn("oAuthFaebookSignIn");
 
     @Getter private final String value;
     @Getter private final boolean needSession;
