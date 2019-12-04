@@ -4,8 +4,10 @@ import com.ccz.modules.common.action.SessionItem;
 import com.ccz.modules.repository.db.user.UserRec;
 import io.netty.channel.Channel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class AuthSession extends SessionItem<UserRec> {
 	private String scode;
 

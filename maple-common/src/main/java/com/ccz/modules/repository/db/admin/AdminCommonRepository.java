@@ -16,8 +16,8 @@ public class AdminCommonRepository extends CommonRepository {
 
     public String getPoolName() { return ADMIN_POOLNAME;    }
 
-    public boolean addAdminUser(String email, String password, EAdminStatus adminStatus, EUserRole userRole, String userName, String nationality) {
-        return new AdminUserRec(getPoolName()).insert(email, password, adminStatus, userRole, userName, nationality);
+    public boolean addAdminUser(String email, String password, EUserRole userRole, String userName) {
+        return new AdminUserRec(getPoolName()).insert(email, password, userRole, userName);
     }
 
     public AdminUserRec getAdminUser(String email) {
@@ -41,10 +41,9 @@ public class AdminCommonRepository extends CommonRepository {
     }
 
     public boolean addAdminApp(String scode, String appId, String appToken, String email, String title,
-                          String version, String description, EAdminAppStatus appStatus, String fcmId, String fcmKey,
-                          String storeUrl, boolean updateForce) {
-        return new AdminAppRec(getPoolName()).insert(appId, email, scode, title, appToken,
-                version, description, appStatus, fcmId, fcmKey, storeUrl, updateForce);
+                          String description, EAdminAppStatus appStatus, String fcmId, String fcmKey) {
+        return new AdminAppRec(getPoolName()).insert(scode, appId, email, title, appToken,
+                description, appStatus, fcmId, fcmKey);
     }
 
     public AdminAppRec getAdminApp(String applicationId) {
@@ -59,14 +58,12 @@ public class AdminCommonRepository extends CommonRepository {
         return new AdminAppRec(getPoolName()).getApp(scode);
     }
 
-    public boolean updateAdminApp(String email, String applicationId, String title, String version, boolean updateForce, String storeUrl,
-                             String description, EAdminAppStatus appStatus, String fcmId, String fcmKey) {
-        return new AdminAppRec(getPoolName()).updateApp(email, applicationId, title, version, updateForce, storeUrl,
-                                description, appStatus, fcmId, fcmKey);
+    public boolean updateAdminApp(String email, String scode, String title, String description, EAdminAppStatus appStatus, String fcmId, String fcmKey) {
+        return new AdminAppRec(getPoolName()).updateApp(email, scode, title,description, appStatus, fcmId, fcmKey);
     }
 
-    public boolean updateAdminAppStatus(String email, String applicationId, EAdminAppStatus appStatus) {
-        return new AdminAppRec(getPoolName()).updateStatus(email, applicationId, appStatus);
+    public boolean updateAdminAppStatus(String email, String scode, EAdminAppStatus appStatus) {
+        return new AdminAppRec(getPoolName()).updateStatus(email, scode, appStatus);
     }
 
     public boolean updateExternalDbInfo(String email, String scode, String dbHost, String dbOptions, String dbUserId, String dbPassword) {

@@ -7,54 +7,79 @@ import com.ccz.modules.domain.constant.EFriendType;
 import com.ccz.modules.domain.constant.EUserRole;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@ApiModel(description = "Admin Management Form")
 public class AdminForm {
 
+    @ApiModel(description = "Common Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class AdminCommonForm extends CommonForm{
         @ApiModelProperty(value="이메일 주소", example="email@test.com", required=true)
         private String email;
-        @ApiModelProperty(value="토큰", example="token string", required=true)
+        @ApiModelProperty(value="토큰", example="token string", hidden=true)
         private String token;
     }
 
+    @ApiModel(description = "Add User Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class AdminUserForm extends AdminCommonForm {
+        @ApiModelProperty(value="패스워드", example="*****", required=true)
         private String password;
+        @ApiModelProperty(value="상태", hidden = true)
         private EAdminStatus adminStatus;
-        private EUserRole userRole;
+        @ApiModelProperty(value="사용자 롤", hidden = true)
+        private EUserRole userRole = EUserRole.user;
+        @ApiModelProperty(value="사용자 이름", example="고길동", required=true)
         private String userName;
-        private String nationality;
     }
 
+    @ApiModel(description = "Login Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class AdminLoginForm extends AdminCommonForm {
+        @ApiModelProperty(value="패스워드", example="*****", required=true)
         private String password;
     }
 
+    @ApiModel(description = "Logout Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class AdminLogoutForm extends AdminCommonForm {
     }
 
+    @ApiModel(description = "Add App Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class AddAppForm extends AdminCommonForm {
+        @ApiModelProperty(value="Service Code(Unique)", example="MAPLE_APP", required=true)
+        private String scode;
+        @ApiModelProperty(value="앱 타이틀", example="서비스 앱", required=true)
         private String title;
-        private String version;
-        private String storeUrl;
+        @ApiModelProperty(value="앱 설명", example="좋은앱", required=true)
         private String description;
+        @ApiModelProperty(value="앱 상태")
         private EAdminAppStatus appStatus;
-        private boolean updateForce;
+        @ApiModelProperty(value="FCM Push ID", example="PushID")
         private String fcmId;
+        @ApiModelProperty(value="FCM Push Key", example="PushKey")
         private String fcmKey;
 
         //Optional, 외부 DB 사용시
+        @ApiModelProperty(value="DB Host", example="10.10.10.10")
         private String dbHost;
+        @ApiModelProperty(value="DB Options", example="zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8&connectTimeout=2000&autoReconnect=true&serverTimezone=UTC&useSSL=false")
         private String dbOptions;
+        @ApiModelProperty(value="User Id", example="accountId")
         private String dbUserId;
+        @ApiModelProperty(value="User Password", example="********")
         private String dbPassword;
 
         public boolean isEmptyExternalDb() {
@@ -62,34 +87,51 @@ public class AdminForm {
         }
     }
 
+    @ApiModel(description = "Delete App Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class DelAppForm extends AdminCommonForm {
+        @ApiModelProperty(value="Service Code(Unique)", example="MAPLE_APP")
         private String scode;
-        private String appId;
-        private String confirmPassword;
+        @ApiModelProperty(value="패스워드", example="*****", required=true)
+        private String password;
     }
 
+    @ApiModel(description = "App List Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class AppListForm extends AdminCommonForm {
-        private int offset;
+        @ApiModelProperty(value="리스트 시작 옵셋", example="0", required=true)
+        private int offset = 0;
+        @ApiModelProperty(value="요청 갯수", example="1000", required=true)
         private int count;
+        @ApiModelProperty(value="앱 상태")
         private EAdminAppStatus appStatus;
     }
 
+    @ApiModel(description = "Modify App Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class ModifyAppForm extends AddAppForm {
-        private String appId;
-
-        private String confirmPassword;
+        @ApiModelProperty(value="Service Code(Unique)", example="MAPLE_APP")
+        private String scode;
+        @ApiModelProperty(value="패스워드", example="*****", required=true)
+        private String password;
     }
 
+    @ApiModel(description = "App Count Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class AppCountForm extends AdminCommonForm {
+        @ApiModelProperty(value="앱 상태", example="all", required=true)
         private EAdminAppStatus appStatus;
     }
 
+    @ApiModel(description = "Update App Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class UpdateAppForm extends ModifyAppForm {
+        @ApiModelProperty(value="앱 상태", example="all", required=true)
         private EAdminAppStatus appStatus;
     }
 }

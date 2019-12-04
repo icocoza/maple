@@ -22,10 +22,6 @@ public enum EMessageType {
         this.needSession = needSession;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public static final Map<String, EMessageType> StrToAptCmdMap;
 
     static {

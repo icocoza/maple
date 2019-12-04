@@ -69,8 +69,12 @@ public class MissSaigonMain implements IBizMain {
     @Override
     public void init() {
         try {
-            DbAdminManager.getInst().initAdminCommon(missSaigonConfig.getMysqlHost(), missSaigonConfig.getMysqlOptions(), missSaigonConfig.getMysqlUsername(), missSaigonConfig.getMysqlPassword());
-            //DbConnMgr.getInst().createConnectionPool(missSaigonConfig.getPoolname(), missSaigonConfig.getMysqlUrl(), missSaigonConfig.getMysqlUsername(), missSaigonConfig.getMysqlPassword(), 4, 8);
+            DbAdminManager.getInst().initAdminCommon(missSaigonConfig.getPoolName(), missSaigonConfig.getMySqlHost(), missSaigonConfig.getMySqlOptions(), missSaigonConfig.getMySqlUsername(), missSaigonConfig.getMySqlPassword());
+            if(DbAdminManager.getInst().createAdminDatabase() == true) {
+                DbAdminManager.getInst().removeAdminConnectionPoolForCreateDatabase();
+                DbAdminManager.getInst().createAdminConnectionPool();
+                DbAdminManager.getInst().createAdminTables();
+            }
         }catch(Exception e) {
             log.error(e.getMessage());
         }

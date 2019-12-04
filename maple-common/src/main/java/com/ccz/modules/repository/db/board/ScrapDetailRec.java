@@ -3,12 +3,14 @@ package com.ccz.modules.repository.db.board;
 import com.ccz.modules.common.dbhelper.DbReader;
 import com.ccz.modules.common.dbhelper.DbRecord;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class ScrapDetailRec extends DbRecord {
 
 	private String scrapId;

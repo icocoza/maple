@@ -5,12 +5,14 @@ import com.ccz.modules.common.dbhelper.DbRecord;
 import com.ccz.modules.domain.constant.EAdminStatus;
 import com.ccz.modules.domain.constant.EUserRole;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class AdminTokenRec extends DbRecord {
 
     private String email;

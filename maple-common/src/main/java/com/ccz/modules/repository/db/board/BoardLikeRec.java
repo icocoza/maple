@@ -4,10 +4,12 @@ import com.ccz.modules.common.dbhelper.DbReader;
 import com.ccz.modules.common.dbhelper.DbRecord;
 import com.ccz.modules.domain.constant.EBoardPreferences;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class BoardLikeRec extends DbRecord {
 
 	private String boardId;

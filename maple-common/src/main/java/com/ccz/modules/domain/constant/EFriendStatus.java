@@ -22,10 +22,6 @@ public enum EFriendStatus {
         this.needSession = needSession;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public static final Map<String, EFriendStatus> StrToAptCmdMap;
 
     static {

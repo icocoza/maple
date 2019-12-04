@@ -22,10 +22,6 @@ public enum EUploadFileType {
         this.needSession = needSession;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public static final Map<String, EUploadFileType> StrToAptCmdMap;
 
     static {

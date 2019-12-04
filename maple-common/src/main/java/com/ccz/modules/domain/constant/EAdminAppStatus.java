@@ -22,10 +22,6 @@ public enum EAdminAppStatus {
         this.needSession = needSession;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public static final Map<String, EAdminAppStatus> StrToAptCmdMap;
 
     static {

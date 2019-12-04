@@ -4,6 +4,7 @@ import com.ccz.modules.common.dbhelper.DbReader;
 import com.ccz.modules.common.dbhelper.DbRecord;
 import com.ccz.modules.domain.constant.EMessageType;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class MessageDelRec extends DbRecord {
 
     private String channelId;

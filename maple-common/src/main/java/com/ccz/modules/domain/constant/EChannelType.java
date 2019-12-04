@@ -23,10 +23,6 @@ public enum EChannelType {
         this.needSession = needSession;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public static final Map<String, EChannelType> StrToAptCmdMap;
 
     static {

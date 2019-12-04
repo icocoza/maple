@@ -8,6 +8,7 @@ import com.ccz.modules.domain.constant.EFriendType;
 import com.ccz.modules.domain.constant.EUserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class AdminUserRec extends DbRecord {
 
     private String email;
@@ -68,16 +70,14 @@ public class AdminUserRec extends DbRecord {
     }
 
     ////////////////// Queries /////////////////////
-    public boolean insert(String email, String password, EAdminStatus adminStatus, EUserRole userRole, String userName, String nationality) {
+    public boolean insert(String email, String password, EUserRole userRole, String userName) {
         this.email = email;
         this.password = password;
-        this.adminStatus = adminStatus;
         this.userRole = userRole;
         this.userName = userName;
-        this.nationality = nationality;
-        String sql = String.format("INSERT INTO adminUser (email, password, adminStatus, userRole, userName, nationality) "
-                        + "VALUES('%s', '%s', '%s', '%s', '%s', '%s')", 
-                email, password, adminStatus.getValue(), userRole.getValue(), userName, nationality);
+        String sql = String.format("INSERT INTO adminUser (email, password, userRole, userName) "
+                        + "VALUES('%s', '%s', '%s', '%s')",
+                email, password, userRole.getValue(), userName);
         return super.insert(sql);
     }
 

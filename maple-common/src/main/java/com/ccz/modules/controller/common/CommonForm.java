@@ -10,7 +10,7 @@ public class CommonForm {
 
     @ApiModelProperty(value="Service Code", example="maple", required=true)
     private String scode;
-    @ApiModelProperty(value="Command", example="signin", required=true)
+    @ApiModelProperty(value="Command", example="signin", hidden = true)
     private String cmd;
 
 }

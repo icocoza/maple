@@ -8,6 +8,7 @@ import com.ccz.modules.domain.constant.EUserAuthType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -15,6 +16,7 @@ public class UserForm {
 
     @ApiModel(description = "아이디 검색 Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class FindIdForm extends CommonForm {
         @ApiModelProperty(value="사용자 이름", example="홍길동", required=true)
         private String userName;
@@ -23,6 +25,7 @@ public class UserForm {
     /*for User Register Command*/
     @ApiModel(description = "사용자 등록 공통 Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class RegisterForm extends CommonForm {
         @ApiModelProperty(value = "사용자 이름", example = "홍길동", required = true)
         private String userName;
@@ -49,6 +52,7 @@ public class UserForm {
 
     @ApiModel(description = "사용자 등록 Id/Pw Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class IdPwForm extends RegisterForm {
         @ApiModelProperty(value = "사용자 이름", example = "홍길동", required = true)
         private String userName;
@@ -63,6 +67,7 @@ public class UserForm {
 
     @ApiModel(description = "사용자 등록 Email Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class EmailForm extends RegisterForm {
         @ApiModelProperty(value = "사용자 이름", example = "홍길동", required = true)
         private String userName;
@@ -77,6 +82,7 @@ public class UserForm {
 
     @ApiModel(description = "사용자 등록 Mobiile Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class MobileForm extends RegisterForm {
         @ApiModelProperty(value = "사용자 이름", example = "홍길동", required = true)
         private String userName;
@@ -93,6 +99,7 @@ public class UserForm {
 
     @ApiModel(description = "로그인 Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class LoginForm extends CommonForm {
         @ApiModelProperty(value = "사용자 이름", example = "홍길동", required = true)
         private String userName;
@@ -118,11 +125,13 @@ public class UserForm {
 
     @ApiModel(description = "익명 로그인 Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class AnonymousLoginForm extends LoginForm {
     }
 
     @ApiModel(description = "User Signin Form")
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class SigninForm extends CommonForm {
         @ApiModelProperty(value = "로그인 토큰", example = "token", required = true)
         private String token;

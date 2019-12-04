@@ -27,10 +27,6 @@ public enum EBoardCmd {
         this.needSession = needSession;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public static final Map<String, EBoardCmd> StrToAptCmdMap;
 
     static {

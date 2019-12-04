@@ -6,7 +6,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public enum EAdminStatus {
-    none("none"), normal("normal"), pending("pending"), block("block"), leave("leave");
+    none("none"), normal("normal"), pending("pending"),
+    reject("reject"), block("block"), leave("leave");
 
     @Getter
     private final String value;
@@ -20,10 +21,6 @@ public enum EAdminStatus {
     private EAdminStatus(String value, boolean needSession) {
         this.value = value;
         this.needSession = needSession;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     public static final Map<String, EAdminStatus> StrToAptCmdMap;

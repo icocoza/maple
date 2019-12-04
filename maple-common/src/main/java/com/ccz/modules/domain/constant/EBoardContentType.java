@@ -23,10 +23,6 @@ public enum EBoardContentType {
         this.needSession = needSession;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public static final Map<String, EBoardContentType> StrToAptCmdMap;
 
     static {

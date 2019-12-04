@@ -4,12 +4,14 @@ import com.ccz.modules.common.dbhelper.DbReader;
 import com.ccz.modules.common.dbhelper.DbRecord;
 import com.ccz.modules.domain.constant.EAdminAppStatus;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class AdminAppRec extends DbRecord {
 
     private String applicationId;
@@ -17,13 +19,10 @@ public class AdminAppRec extends DbRecord {
     private String scode;
     private String title;
     private String token;
-    private String version;
     private String description;
     private EAdminAppStatus appStatus;
     private String fcmId;
     private String fcmKey;
-    private String storeUrl;
-    private boolean updateForce;
 
     private String dbHost;
     private String dbOptions;
@@ -53,13 +52,10 @@ public class AdminAppRec extends DbRecord {
         rec.scode = rd.getString("scode");
         rec.title = rd.getString("title");
         rec.token = rd.getString("token");
-        rec.version = rd.getString("version");
         rec.description = rd.getString("description");
         rec.appStatus = EAdminAppStatus.getType(rd.getString("appStatus"));
         rec.fcmId = rd.getString("fcmId");
         rec.fcmKey = rd.getString("fcmKey");
-        rec.storeUrl = rd.getString("storeUrl");
-        rec.updateForce = rd.getBoolean("updateForce");
 
         rec.dbHost = rd.getString("dbHost");
         rec.dbOptions = rd.getString("dbOptions");
@@ -85,11 +81,10 @@ public class AdminAppRec extends DbRecord {
 
     ////////////////// Queries /////////////////////
     public boolean insert(String scode, String applicationId, String email, String title, String token,
-                          String version, String description, EAdminAppStatus appStatus, String fcmId, String fcmKey,
-                          String storeUrl, boolean updateForce) {
-        String sql = String.format("INSERT INTO adminApp (applicationId, email, scode, title, token, version, description, appStatus, fcmId, fcmKey, storeUrl, updateForce) "
-                          + "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %b)",
-                          applicationId, email, scode, title, token, version, description, appStatus, fcmId, fcmKey, storeUrl, updateForce);
+                          String description, EAdminAppStatus appStatus, String fcmId, String fcmKey) {
+        String sql = String.format("INSERT INTO adminApp (applicationId, email, scode, title, token, description, appStatus, fcmId, fcmKey) "
+                          + "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+                          applicationId, email, scode, title, token, description, appStatus, fcmId, fcmKey);
         return super.insert(sql);
     }
 
@@ -108,17 +103,17 @@ public class AdminAppRec extends DbRecord {
         return (AdminAppRec) super.getOne(sql);
     }
 
-    public boolean updateApp(String email, String applicationId, String title, String version, boolean updateForce, String storeUrl,
+    public boolean updateApp(String email, String scode, String title,
                              String description, EAdminAppStatus appStatus, String fcmId, String fcmKey) {
-        String sql = String.format("UPDATE adminApp SET title='%s', version='%s', updateForce=%b, storeUrl='%s', description='%s', "
+        String sql = String.format("UPDATE adminApp SET title='%s', description='%s', "
                         + "appStatus='%s', statusAt=now(), fcmId='%s', fcmKey='%s' "
-                        + "WHERE email='%s' AND applicationId='%s'", 
-                title, version, updateForce, storeUrl, description, appStatus.getValue(), fcmId, fcmKey, email, applicationId);
+                        + "WHERE email='%s' AND scode='%s'",
+                title, description, appStatus.getValue(), fcmId, fcmKey, email, scode);
         return super.update(sql);
     }
 
-    public boolean updateStatus(String email, String applicationId, EAdminAppStatus appStatus) {
-        String sql = String.format("UPDATE adminApp SET appStatus='%s', statusAt=now() WHERE email='%s' AND applicationId='%s'", appStatus.getValue(), email, applicationId);
+    public boolean updateStatus(String email, String scode, EAdminAppStatus appStatus) {
+        String sql = String.format("UPDATE adminApp SET appStatus='%s', statusAt=now() WHERE email='%s' AND scode='%s'", appStatus.getValue(), email, scode, applicationId);
         return super.update(sql);
     }
 

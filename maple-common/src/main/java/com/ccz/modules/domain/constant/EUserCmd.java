@@ -26,10 +26,6 @@ public enum EUserCmd {
         this.needSession = needSession;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public static final Map<String, EUserCmd> StrToAptCmdMap;
 
     static {

@@ -3,10 +3,12 @@ package com.ccz.modules.repository.db.board;
 import com.ccz.modules.common.dbhelper.DbReader;
 import com.ccz.modules.common.dbhelper.DbRecord;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class BoardCountRec extends DbRecord {
 
 	private String boardId;

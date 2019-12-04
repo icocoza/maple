@@ -56,7 +56,7 @@ public class AdminCommandCommonAction extends CommandAction {
 
     @Override
     public String makeCommandId(Enum e) {
-        return adminCommonRepository.getPoolName() + ":" + e.name();
+        return e.name();
     }
 
     ICommandFunction<Channel, ResponseData<EAllError>, AdminUserForm> doRegister = (Channel ch, ResponseData<EAllError> res, AdminUserForm form) -> {
@@ -69,8 +69,7 @@ public class AdminCommandCommonAction extends CommandAction {
         if(form.getPassword().length() < 8)
             return res.setError(EAllError.short_password_length_than_8);
 
-        if( adminCommonRepository.addAdminUser(form.getEmail(), form.getPassword(), form.getAdminStatus(),
-                form.getUserRole(), form.getUserName(), form.getNationality()) == false)
+        if( adminCommonRepository.addAdminUser(form.getEmail(), form.getPassword(), form.getUserRole(), form.getUserName()) == false)
             return res.setError(EAllError.register_failed);
         return res.setError(EAllError.ok).setParam(form.getEmail());
     };
@@ -113,24 +112,22 @@ public class AdminCommandCommonAction extends CommandAction {
             return res;
 
         if(adminCommonRepository.addAdminApp(form.getScode(), appId, appToken, form.getEmail(), form.getTitle(),
-                form.getVersion(), form.getDescription(), form.getAppStatus(), form.getFcmId(), form.getFcmKey(),
-                form.getStoreUrl(), form.isUpdateForce()) == false)
+                form.getDescription(), form.getAppStatus(), form.getFcmId(), form.getFcmKey()) == false)
             return res.setError(EAllError.failed_to_add_app);
         return res.setError(EAllError.ok).setParam("appId", appId).setParam("appToken", appToken);
     };
 
     private ResponseData<EAllError> createAppDatabase(ResponseData<EAllError> res, AddAppForm form) {
         if( form.isEmptyExternalDb() == true) {
-            if( DbAdminManager.getInst().createDatabaseOnInternal(form.getScode(), form.getScode()) == false )
+            if( DbAdminManager.getInst().createDatabaseOnInternal(form.getScode()) == false )
                 return res.setError(EAllError.failed_to_create_app_database);
         }else {
-            if( DbAdminManager.getInst().createDatabaseOnExternal(form.getScode(), form.getScode(), form.getDbHost(), form.getDbOptions(), form.getDbUserId(), form.getDbPassword()) == false )
+            if( DbAdminManager.getInst().createDatabaseOnExternal(form.getScode(), form.getDbHost(), form.getDbOptions(), form.getDbUserId(), form.getDbPassword()) == false )
                 return res.setError(EAllError.invalid_db_parameter);
             adminCommonRepository.updateExternalDbInfo(form.getEmail(), form.getScode(), form.getDbHost(), form.getDbOptions(), form.getDbUserId(), form.getDbPassword());
         }
 
         DbAdminManager.getInst().createTables(form.getScode());
-        DbAdminManager.getInst().removeDatabase(form.getScode());
         return res.setError(EAllError.ok);
     }
 
@@ -138,10 +135,10 @@ public class AdminCommandCommonAction extends CommandAction {
         if( adminCommonRepository.isAvailableToken(form.getEmail(), form.getToken(), getRemoteIp(ch)) == false )
             return res.setError(EAllError.unauthorized_or_expired_user);
 
-        if( adminCommonRepository.getAdminUser(form.getEmail(), form.getConfirmPassword()) == AdminUserRec.Empty )
+        if( adminCommonRepository.getAdminUser(form.getEmail(), form.getPassword()) == AdminUserRec.Empty )
             return res.setError(EAllError.unauthorized_user);
 
-        adminCommonRepository.updateAdminAppStatus(form.getEmail(), form.getAppId(), EAdminAppStatus.delete);
+        adminCommonRepository.updateAdminAppStatus(form.getEmail(), form.getScode(), EAdminAppStatus.delete);
         //TODO
         //TODO
         //TODO scode 접근 못하도록 막아야 함
@@ -167,14 +164,13 @@ public class AdminCommandCommonAction extends CommandAction {
         if( adminCommonRepository.isAvailableToken(form.getEmail(), form.getToken(), getRemoteIp(ch)) == false )
             return res.setError(EAllError.unauthorized_or_expired_user);
 
-        if( adminCommonRepository.getAdminUser(form.getEmail(), form.getConfirmPassword()) == AdminUserRec.Empty )
+        if( adminCommonRepository.getAdminUser(form.getEmail(), form.getPassword()) == AdminUserRec.Empty )
             return res.setError(EAllError.unauthorized_user);
 
-        if( adminCommonRepository.updateAdminApp(form.getEmail(), form.getAppId(), form.getTitle(), form.getVersion(),
-                form.isUpdateForce(), form.getStoreUrl(), form.getDescription(), form.getAppStatus(),
+        if( adminCommonRepository.updateAdminApp(form.getEmail(), form.getScode(), form.getTitle(), form.getDescription(), form.getAppStatus(),
                 form.getFcmId(), form.getFcmKey()) == false )
             return res.setError(EAllError.eFailedToUpdateApp);
-        return res.setError(EAllError.ok).setParam("appId", form.getAppId());
+        return res.setError(EAllError.ok).setParam("appId", form.getScode());
     };
 
     ICommandFunction<Channel, ResponseData<EAllError>, AppCountForm> appCount = (Channel ch, ResponseData<EAllError> res, AppCountForm form) -> {
@@ -189,12 +185,12 @@ public class AdminCommandCommonAction extends CommandAction {
         if( adminCommonRepository.isAvailableToken(form.getEmail(), form.getToken(), getRemoteIp(ch)) == false )
             return res.setError(EAllError.unauthorized_or_expired_user);
 
-        if( adminCommonRepository.getAdminUser(form.getEmail(), form.getConfirmPassword()) == AdminUserRec.Empty )
+        if( adminCommonRepository.getAdminUser(form.getEmail(), form.getPassword()) == AdminUserRec.Empty )
             return res.setError(EAllError.unauthorized_user);
 
-        if( adminCommonRepository.updateAdminAppStatus(form.getEmail(), form.getAppId(), form.getAppStatus()) == false )
+        if( adminCommonRepository.updateAdminAppStatus(form.getEmail(), form.getScode(), form.getAppStatus()) == false )
             return res.setError(EAllError.eFailedToUpdateApp);
-        return res.setError(EAllError.ok).setParam("appId", form.getAppId());
+        return res.setError(EAllError.ok).setParam("appId", form.getScode());
     };
 
 }

@@ -4,6 +4,7 @@ import com.ccz.modules.common.dbhelper.DbReader;
 import com.ccz.modules.common.dbhelper.DbRecord;
 import com.ccz.modules.domain.constant.EBoardContentType;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class BoardRec extends DbRecord {
 
 	private String boardId;

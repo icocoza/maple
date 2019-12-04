@@ -4,12 +4,14 @@ import com.ccz.modules.common.dbhelper.DbReader;
 import com.ccz.modules.common.dbhelper.DbRecord;
 import com.ccz.modules.domain.constant.EBoardContentType;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class BoardContentRec extends DbRecord {
 
 	private String boardId;

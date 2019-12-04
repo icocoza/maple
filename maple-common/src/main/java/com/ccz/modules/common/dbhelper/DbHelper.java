@@ -46,9 +46,9 @@ public class DbHelper {
     		DbConnection conn = null;
         try
         {
-	        	conn = DbConnMgr.getInst().getConnection(poolName);
-	        	Statement stmt = conn.getConn(true).createStatement();
-	        	ResultSet rs = stmt.executeQuery(sql);
+			conn = DbConnMgr.getInst().getConnection(poolName);
+			Statement stmt = conn.getConn(true).createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
 	        return new DbReader(poolName, conn, stmt, rs);
         }
         catch (Exception e)
@@ -99,16 +99,15 @@ public class DbHelper {
     
     static public boolean nonSelect(String poolName, String sql)
     {
-    		DbConnection conn = null;
-    		Statement stmt = null;
+		DbConnection conn = null;
         try
         {
         	log.info(sql);
-	        	conn = DbConnMgr.getInst().getConnection(poolName);
-	        	stmt = conn.getConn(true).createStatement();
-	        	boolean bok = (stmt.executeUpdate(sql)>0 ? true : false);
-	        	stmt.close();
-	        	return bok;
+			conn = DbConnMgr.getInst().getConnection(poolName);
+			Statement stmt = conn.getConn(true).createStatement();
+			boolean bok = (stmt.executeUpdate(sql)>0 ? true : false);
+			stmt.close();
+			return bok;
         }
         catch (Exception e) {
         	log.info(e.getMessage());

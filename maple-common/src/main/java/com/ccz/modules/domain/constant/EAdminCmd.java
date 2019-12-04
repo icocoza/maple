@@ -25,10 +25,6 @@ public enum EAdminCmd {
         this.needSession = needSession;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public static final Map<String, EAdminCmd> StrToAptCmdMap;
 
     static {

@@ -22,10 +22,6 @@ public enum EAuthProvider {
         this.needSession = needSession;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public static final Map<String, EAuthProvider> StrToAptCmdMap;
 
     static {

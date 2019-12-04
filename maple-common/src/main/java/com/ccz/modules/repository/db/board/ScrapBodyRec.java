@@ -4,9 +4,11 @@ import com.ccz.modules.common.dbhelper.DbReader;
 import com.ccz.modules.common.dbhelper.DbRecord;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class ScrapBodyRec extends DbRecord {
 
 	private String scrapId;

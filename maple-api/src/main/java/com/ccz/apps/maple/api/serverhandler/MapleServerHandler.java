@@ -60,19 +60,20 @@ public class MapleServerHandler implements IServiceActionHandler {
         }
 
         ResponseData<EAllError> res = new ResponseData<EAllError>(form.getScode(), form.getCmd());
-        try {
-            if(DbScodeManager.getInst().initDbForServiceCode(form.getScode()) == false) {
-                res.setError(EAllError.not_exist_scode).setParam("scode", form.getScode());
-                return res.toJsonString();
-            }
-        }catch (Exception e) {
-            res.setError(EAllError.unknown_error).setParam("result", e.getMessage());
-            return res.toJsonString();
-        }
+
+//        try {
+//            if(DbScodeManager.getInst().initDbForServiceCode(form.getScode()) == false) {
+//                res.setError(EAllError.not_exist_scode).setParam("scode", form.getScode());
+//                return res.toJsonString();
+//            }
+//        }catch (Exception e) {
+//            res.setError(EAllError.unknown_error).setParam("result", e.getMessage());
+//            return res.toJsonString();
+//        }
 
         ICommandFunction func = cmdFuncMap.get(form.getCmd());
         if(func == null) {
-            return "Unknown Command";
+            return res.setError(EAllError.eNoServiceCommand).setParam("result", "NoServiceCommand").toJsonString();
         }
         res = (ResponseData<EAllError>)func.doAction(authSession, res, form);
         return res.toJsonString();

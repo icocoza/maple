@@ -23,10 +23,6 @@ public enum EBoardPreferences {
         this.needSession = needSession;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public static final Map<String, EBoardPreferences> StrToAptCmdMap;
 
     static {

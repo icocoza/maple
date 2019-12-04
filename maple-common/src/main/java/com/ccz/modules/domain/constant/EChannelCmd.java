@@ -24,10 +24,6 @@ public enum EChannelCmd {
         this.needSession = needSession;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     public static final Map<String, EChannelCmd> StrToAptCmdMap;
 
     static {

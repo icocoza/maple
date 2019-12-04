@@ -6,6 +6,7 @@ import com.ccz.modules.domain.constant.EFriendStatus;
 import com.ccz.modules.domain.constant.EFriendType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class FriendRec extends DbRecord {
 
     @JsonIgnore
@@ -112,6 +114,7 @@ public class FriendRec extends DbRecord {
     }
 
     @Data
+    @EqualsAndHashCode(callSuper = false)
     public class FriendRecInfo extends DbRecord {
         @JsonIgnore
         private String userId;

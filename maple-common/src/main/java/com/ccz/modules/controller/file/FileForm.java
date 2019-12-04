@@ -4,6 +4,7 @@ import com.ccz.modules.controller.common.CommonForm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class FileForm {
 
     @Data
     @ApiModel(description = "Single File Upload Form")
+    @EqualsAndHashCode(callSuper = false)
     public class UploadForm extends CommonForm {
 
         public UploadForm() {
@@ -48,6 +50,7 @@ public class FileForm {
 
     @Data
     @ApiModel(description = "Multi Files Upload Form")
+    @EqualsAndHashCode(callSuper = false)
     public class MultiUploadForm extends CommonForm {
         public MultiUploadForm() {
             super.setCmd("multiUploadFile");
