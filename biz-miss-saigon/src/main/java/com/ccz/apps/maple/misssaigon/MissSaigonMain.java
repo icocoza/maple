@@ -15,6 +15,7 @@ import com.ccz.modules.domain.inf.IBizMain;
 import com.ccz.modules.domain.inf.ICommandFunction;
 import com.ccz.modules.server.ServiceServer;
 import com.ccz.modules.server.service.DbAdminManager;
+import com.ccz.modules.server.service.DbAppManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,7 @@ public class MissSaigonMain implements IBizMain {
                 DbAdminManager.getInst().createAdminConnectionPool();
                 DbAdminManager.getInst().createAdminTables();
             }
+            DbAppManager.getInst().initInternalDb(missSaigonConfig.getPoolName(), missSaigonConfig.getMySqlHost(), missSaigonConfig.getMySqlOptions(), missSaigonConfig.getMySqlUsername(), missSaigonConfig.getMySqlPassword());
         }catch(Exception e) {
             log.error(e.getMessage());
         }

@@ -23,8 +23,7 @@ public class ResponseData<T> {
 	
 	Map<String, Object> mapParam = new HashMap<>();
 	
-	public ResponseData(String serviceCode, String cmd) {
-		this.serviceCode = serviceCode;
+	public ResponseData(String cmd) {
 		this.cmd = cmd;
 	}
 	

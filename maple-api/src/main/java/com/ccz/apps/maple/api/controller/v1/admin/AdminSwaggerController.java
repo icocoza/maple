@@ -27,7 +27,7 @@ public class AdminSwaggerController {
     @ApiOperation(value = "서비스 사용자 등록", notes = "서비스 사용자 등록", response = String.class)
     @RequestMapping(value = "/registerAdminUser", method = {RequestMethod.POST})
     public ResponseEntity<?> registerAdminUser(@ModelAttribute @Validated AdminForm.AdminUserForm form) {
-        form.setCmd(EAdminCmd.adminregister.getValue());
+        form.setCmd(EAdminCmd.adminRegister.getValue());
         form.setAdminStatus(EAdminStatus.pending);
         String result = mapleServerHandler.process(null, form);
         return ResponseEntity.ok(result);
@@ -36,7 +36,7 @@ public class AdminSwaggerController {
     @ApiOperation(value = "서비스 어드민 로그인", notes = "서비스 어드민 로그인", response = String.class)
     @RequestMapping(value = "/loginAdminUser", method = {RequestMethod.POST})
     public ResponseEntity<?> loginAdminUser(@ModelAttribute @Validated AdminForm.AdminLoginForm form) {
-        form.setCmd(EAdminCmd.adminlogin.getValue());
+        form.setCmd(EAdminCmd.adminLogin.getValue());
         String result = mapleServerHandler.process(null, form);
         return ResponseEntity.ok(result);
     }
@@ -44,7 +44,7 @@ public class AdminSwaggerController {
     @ApiOperation(value = "서비스 어드민 로그아웃", notes = "서비스 어드민 로그아웃", response = String.class)
     @RequestMapping(value = "/logoutAdminUser", method = {RequestMethod.POST})
     public ResponseEntity<?> logoutAdminUser(@ModelAttribute @Validated AdminForm.AdminLogoutForm form) {
-        form.setCmd(EAdminCmd.adminlogout.getValue());
+        form.setCmd(EAdminCmd.adminLogout.getValue());
         String result = mapleServerHandler.process(null, form);
         return ResponseEntity.ok(result);
     }
@@ -52,7 +52,15 @@ public class AdminSwaggerController {
     @ApiOperation(value = "서비스 앱 등록", notes = "서비스 앱 등록", response = String.class)
     @RequestMapping(value = "/addApp", method = {RequestMethod.POST})
     public ResponseEntity<?> addApp(@ModelAttribute @Validated AdminForm.AddAppForm form) {
-        form.setCmd(EAdminCmd.addapp.getValue());
+        form.setCmd(EAdminCmd.adminAddApp.getValue());
+        String result = mapleServerHandler.process(null, form);
+        return ResponseEntity.ok(result);
+    }
+
+    @ApiOperation(value = "서비스 앱 목록", notes = "서비스 앱 목록", response = String.class)
+    @RequestMapping(value = "/addList", method = {RequestMethod.POST})
+    public ResponseEntity<?> addList(@ModelAttribute @Validated AdminForm.AppListForm form) {
+        form.setCmd(EAdminCmd.adminAppList.getValue());
         String result = mapleServerHandler.process(null, form);
         return ResponseEntity.ok(result);
     }
@@ -60,7 +68,7 @@ public class AdminSwaggerController {
     @ApiOperation(value = "서비스 앱 삭제", notes = "서비스 앱 삭제", response = String.class)
     @RequestMapping(value = "/delApp", method = {RequestMethod.POST})
     public ResponseEntity<?> delApp(@ModelAttribute @Validated AdminForm.DelAppForm form) {
-        form.setCmd(EAdminCmd.delapp.getValue());
+        form.setCmd(EAdminCmd.adminDelApp.getValue());
         String result = mapleServerHandler.process(null, form);
         return ResponseEntity.ok(result);
     }
@@ -68,7 +76,7 @@ public class AdminSwaggerController {
     @ApiOperation(value = "서비스 앱 수정", notes = "서비스 앱 수정", response = String.class)
     @RequestMapping(value = "/modifyApp", method = {RequestMethod.POST})
     public ResponseEntity<?> modifyApp(@ModelAttribute @Validated AdminForm.ModifyAppForm form) {
-        form.setCmd(EAdminCmd.modifyapp.getValue());
+        form.setCmd(EAdminCmd.adminModifyApp.getValue());
         String result = mapleServerHandler.process(null, form);
         return ResponseEntity.ok(result);
     }
@@ -76,7 +84,7 @@ public class AdminSwaggerController {
     @ApiOperation(value = "서비스 앱 갯수", notes = "서비스 앱 갯수", response = String.class)
     @RequestMapping(value = "/appCount", method = {RequestMethod.POST})
     public ResponseEntity<?> appCount(@ModelAttribute @Validated AdminForm.AppCountForm form) {
-        form.setCmd(EAdminCmd.appcount.getValue());
+        form.setCmd(EAdminCmd.adminAppCount.getValue());
         String result = mapleServerHandler.process(null, form);
         return ResponseEntity.ok(result);
     }

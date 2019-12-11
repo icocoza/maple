@@ -59,7 +59,7 @@ public class MapleServerHandler implements IServiceActionHandler {
             }
         }
 
-        ResponseData<EAllError> res = new ResponseData<EAllError>(form.getScode(), form.getCmd());
+        ResponseData<EAllError> res = new ResponseData<EAllError>(form.getCmd());
 
 //        try {
 //            if(DbScodeManager.getInst().initDbForServiceCode(form.getScode()) == false) {
@@ -72,11 +72,10 @@ public class MapleServerHandler implements IServiceActionHandler {
 //        }
 
         ICommandFunction func = cmdFuncMap.get(form.getCmd());
-        if(func == null) {
+        if(func == null)
             return res.setError(EAllError.eNoServiceCommand).setParam("result", "NoServiceCommand").toJsonString();
-        }
-        res = (ResponseData<EAllError>)func.doAction(authSession, res, form);
-        return res.toJsonString();
+
+        return ((ResponseData<EAllError>)func.doAction(authSession, res, form)).toJsonString();
     }
 
     @Override

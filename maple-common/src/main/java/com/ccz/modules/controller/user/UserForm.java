@@ -3,6 +3,7 @@ package com.ccz.modules.controller.user;
 import com.ccz.modules.common.action.CommandAction;
 import com.ccz.modules.common.utils.AsciiSplitter;
 import com.ccz.modules.common.utils.Crypto;
+import com.ccz.modules.controller.common.AuthorizedForm;
 import com.ccz.modules.controller.common.CommonForm;
 import com.ccz.modules.domain.constant.EUserAuthType;
 import io.swagger.annotations.ApiModel;
@@ -18,8 +19,11 @@ public class UserForm {
     @Data
     @EqualsAndHashCode(callSuper = false)
     public class FindIdForm extends CommonForm {
-        @ApiModelProperty(value="사용자 이름", example="홍길동", required=true)
-        private String userName;
+        @ApiModelProperty(value = "앱 등록시 발급받은 앱토큰", example = "홍길동", required = true)
+        private String appToken;
+
+        @ApiModelProperty(value="사용자 아이디", example="홍길동", required=true, allowableValues = "range[6, 20]")
+        private String userId;
     }
 
     /*for User Register Command*/
@@ -27,10 +31,13 @@ public class UserForm {
     @Data
     @EqualsAndHashCode(callSuper = false)
     public class RegisterForm extends CommonForm {
-        @ApiModelProperty(value = "사용자 이름", example = "홍길동", required = true)
-        private String userName;
+        @ApiModelProperty(value = "앱 등록시 발급받은 앱토큰", example = "홍길동", required = true)
+        private String appToken;
 
-        @ApiModelProperty(value = "unique device Id", example = "UNIQUE_ID010101", required = true)
+        @ApiModelProperty(value = "사용자 이름", example = "홍길동", required = true, allowableValues = "range[6, 20]")
+        private String userId;
+
+        @ApiModelProperty(value = "Unique Device Id", example = "UNIQUE_ID010101", required = true)
         private String uuid;
 
         protected EUserAuthType authType = EUserAuthType.none;
@@ -38,10 +45,9 @@ public class UserForm {
         public RegisterForm() {
         }
 
-        public RegisterForm(String uuid, String userName, CommonForm form) {
+        public RegisterForm(String uuid, String userId, CommonForm form) {
             this.uuid = uuid;
-            this.userName = userName;
-            super.setScode(form.getScode());
+            this.userId = userId;
             super.setCmd(form.getCmd());
         }
 
@@ -54,13 +60,15 @@ public class UserForm {
     @Data
     @EqualsAndHashCode(callSuper = false)
     public class IdPwForm extends RegisterForm {
-        @ApiModelProperty(value = "사용자 이름", example = "홍길동", required = true)
-        private String userName;
 
-        @ApiModelProperty(value = "비밀번호", example = "1234", required = true)
+        @ApiModelProperty(value = "비밀번호", example = "1234", required = true, allowableValues = "range[8, 20]")
         private String pw;
 
         public IdPwForm() {
+            super.authType = EUserAuthType.idpw;
+        }
+        public IdPwForm(String uuid, String userName, CommonForm form) {
+            super(uuid, userName, form);
             super.authType = EUserAuthType.idpw;
         }
     }
@@ -69,10 +77,8 @@ public class UserForm {
     @Data
     @EqualsAndHashCode(callSuper = false)
     public class EmailForm extends RegisterForm {
-        @ApiModelProperty(value = "사용자 이름", example = "홍길동", required = true)
-        private String userName;
 
-        @ApiModelProperty(value = "User Email", example = "test@test.com", required = true)
+        @ApiModelProperty(value = "User Email", example = "test@test.com", required = true, allowableValues = "range[6, 50]")
         private String email;
 
         public EmailForm() {
@@ -84,10 +90,8 @@ public class UserForm {
     @Data
     @EqualsAndHashCode(callSuper = false)
     public class MobileForm extends RegisterForm {
-        @ApiModelProperty(value = "사용자 이름", example = "홍길동", required = true)
-        private String userName;
 
-        @ApiModelProperty(value = "User Mobile No.", example = "0123456789", required = true)
+        @ApiModelProperty(value = "User Mobile No.", example = "0123456789", required = true, allowableValues = "range[10, 12]")
         private String phone;
 
         public MobileForm() {
@@ -100,11 +104,9 @@ public class UserForm {
     @ApiModel(description = "로그인 Form")
     @Data
     @EqualsAndHashCode(callSuper = false)
-    public class LoginForm extends CommonForm {
-        @ApiModelProperty(value = "사용자 이름", example = "홍길동", required = true)
-        private String userName;
+    public class LoginForm extends RegisterForm {
 
-        @ApiModelProperty(value = "비밀번호", example = "1234", required = true)
+        @ApiModelProperty(value = "비밀번호", example = "1234", required = true, allowableValues = "range[8, 20]")
         private String pw;
 
         @ApiModelProperty(value = "OS Type", example = "Android or IOS or PC", required = true)
@@ -117,10 +119,8 @@ public class UserForm {
         private String appVersion;
 
         @ApiModelProperty(value = "End Point ID for Push", example = "EPID001", required = false)
-        private String epid;
+        private String epid = "";
 
-        @ApiModelProperty(value = "unique device Id", example = "UNIQUE_ID010101", required = true)
-        private String uuid;
     }
 
     @ApiModel(description = "익명 로그인 Form")
@@ -139,38 +139,32 @@ public class UserForm {
         @ApiModelProperty(value = "unique device Id", example = "UNIQUE_ID010101", required = true)
         private String uuid;
 
-        @ApiModelProperty(hidden = true)
-        private String tokenId;
-        @ApiModelProperty(hidden = true)
-        private String userNameByToken;
-        @ApiModelProperty(hidden = true)
-        private String uuidByToken;
-        @ApiModelProperty(hidden = true)
-        private EUserAuthType authTypeByToken;
+        private Token loginToken;
 
         public boolean decode() {
             try{
-                if(this.token==null)
-                    return false;
-                String dec = Crypto.AES256Cipher.getInst().dec(token);
-                String[] chunk = dec.split(AsciiSplitter.ASS.UNIT);
-                userNameByToken = chunk[0];
-                tokenId = chunk[1];
-                uuidByToken = chunk[2];
-                authTypeByToken = EUserAuthType.getType(chunk[3]);
-                return true;
+                loginToken = new Token().dec(token);
+                return loginToken.isDecrypted();
             }catch(Exception e) {
                 log.error(e.getMessage());
                 return false;
             }
         }
 
-        public boolean isValidUserToken() {
-            if(userNameByToken==null || userNameByToken.length()<1 || uuidByToken == null || uuidByToken.length()<1)
-                return false;
-            return true;
+        public boolean isValidLoginToken() {
+            return loginToken != null && loginToken.isDecrypted() && uuid != null && uuid.equals(loginToken.getUuid());
         }
     }
 
+    @ApiModel(description = "익명 로그인 Form")
+    @Data
+    @EqualsAndHashCode(callSuper = false)
+    public class ChangePwForm extends AuthorizedForm{
+        @ApiModelProperty(value = "기존 비밀번호", example = "1234", required = true, allowableValues = "range[8, 20]")
+        private String oldPw;
+
+        @ApiModelProperty(value = "신규 비밀번호", example = "4321", required = true, allowableValues = "range[8, 20]")
+        private String newPw;
+    }
 
 }

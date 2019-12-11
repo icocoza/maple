@@ -24,4 +24,6 @@ public abstract class CommandAction implements IStringCommandProcess {
 	public void setCommandFunction(String cmd, ICommandFunction func) {
 		cmdFuncMap.put(cmd, func);
 	}
+
+
 }

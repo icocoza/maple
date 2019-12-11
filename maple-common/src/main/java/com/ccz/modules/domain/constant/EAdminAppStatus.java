@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public enum EAdminAppStatus {
-    none("none"), ready("ready"), run("run"), stop("stop"), delete("delete"), all("all");
+    none("none"), READY("READY"), BLOCK("BLOCK"), DELETED("DELETED"), PENDING("PENDING"), STOP("STOP"), ALL("ALL");
 
     @Getter
     private final String value;

@@ -16,106 +16,112 @@ public class AdminCommonRepository extends CommonRepository {
 
     public String getPoolName() { return ADMIN_POOLNAME;    }
 
-    public boolean addAdminUser(String email, String password, EUserRole userRole, String userName) {
-        return new AdminUserRec(getPoolName()).insert(email, password, userRole, userName);
+    public boolean addAdminUser(String token, String email, String password, EUserRole userRole, String userName) {
+        return new AdminUserRec(getPoolName()).insert(token, email, password, userRole, userName);
     }
 
-    public AdminUserRec getAdminUser(String email) {
-        return new AdminUserRec(getPoolName()).getUser(email);
+    public AdminUserRec getAdminUserByUid(String email) {
+        return new AdminUserRec(getPoolName()).getUserByUid(email);
     }
 
-    public AdminUserRec getAdminUser(String email, String password) {
-        return new AdminUserRec(getPoolName()).getUser(email, password);
+    public AdminUserRec getAdminUserByEmail(String email) {
+        return new AdminUserRec(getPoolName()).getUserByEmail(email);
     }
 
-    public boolean updateLastVisit(String email) {
-        return new AdminUserRec(getPoolName()).updateLastVisit(email);
+    public AdminUserRec getAdminUserByEmailPassword(String uid, String password) {
+        return new AdminUserRec(getPoolName()).getUserByEmailPassword(uid, password);
     }
 
-    public boolean updateLeave(String email) {
-        return new AdminUserRec(getPoolName()).updateLeave(email);
+    public boolean updateLastVisit(String uid) {
+        return new AdminUserRec(getPoolName()).updateLastVisit(uid);
     }
 
-    public boolean updatePassword(String email, String oldPass, String newPass) {
-        return new AdminUserRec(getPoolName()).updatePassword(email, oldPass, newPass);
+    public boolean updateLeave(String uid) {
+        return new AdminUserRec(getPoolName()).updateLeave(uid);
     }
 
-    public boolean addAdminApp(String scode, String appId, String appToken, String email, String title,
-                          String description, EAdminAppStatus appStatus, String fcmId, String fcmKey) {
-        return new AdminAppRec(getPoolName()).insert(scode, appId, email, title, appToken,
-                description, appStatus, fcmId, fcmKey);
+    public boolean updatePassword(String uid, String oldPass, String newPass) {
+        return new AdminUserRec(getPoolName()).updatePassword(uid, oldPass, newPass);
+    }
+
+    public boolean addAdminApp(String scode, String appId, String appToken, String uid, String title, String description, EAdminAppStatus appStatus) {
+        return new AdminAppRec(getPoolName()).insert(scode, appId, uid, title, appToken, description, appStatus);
     }
 
     public AdminAppRec getAdminApp(String applicationId) {
         return new AdminAppRec(getPoolName()).getApp(applicationId);
     }
 
-    public AdminAppRec getAdminApp(String email, String scode) {
-        return new AdminAppRec(getPoolName()).getApp(email, scode);
+    public AdminAppRec getAdminApp(String uid, String scode) {
+        return new AdminAppRec(getPoolName()).getApp(uid, scode);
     }
 
     public AdminAppRec getAdminAppByScode(String scode) {
-        return new AdminAppRec(getPoolName()).getApp(scode);
+        return new AdminAppRec(getPoolName()).getAppByScode(scode);
     }
 
-    public boolean updateAdminApp(String email, String scode, String title, String description, EAdminAppStatus appStatus, String fcmId, String fcmKey) {
-        return new AdminAppRec(getPoolName()).updateApp(email, scode, title,description, appStatus, fcmId, fcmKey);
+    public boolean updateAdminPush(String uid, String scode, String fcmId, String fcmKey) {
+        return new AdminAppRec(getPoolName()).updatePush(uid, scode, fcmId,fcmKey);
     }
 
-    public boolean updateAdminAppStatus(String email, String scode, EAdminAppStatus appStatus) {
-        return new AdminAppRec(getPoolName()).updateStatus(email, scode, appStatus);
+    public boolean updateAdminApp(String uid, String scode, String title, String description, EAdminAppStatus appStatus, String fcmId, String fcmKey) {
+        return new AdminAppRec(getPoolName()).updateApp(uid, scode, title,description, appStatus, fcmId, fcmKey);
     }
 
-    public boolean updateExternalDbInfo(String email, String scode, String dbHost, String dbOptions, String dbUserId, String dbPassword) {
-        return new AdminAppRec(getPoolName()).updateExternalDbInfo(email, scode, dbHost, dbOptions, dbUserId, dbPassword);
+    public boolean updateAdminAppStatus(String uid, String scode, EAdminAppStatus appStatus) {
+        return new AdminAppRec(getPoolName()).updateStatus(uid, scode, appStatus);
+    }
+
+    public boolean updateExternalDbInfo(String uid, String scode, String dbHost, String dbOptions, String dbUserId, String dbPassword) {
+        return new AdminAppRec(getPoolName()).updateExternalDbInfo(uid, scode, dbHost, dbOptions, dbUserId, dbPassword);
     }
 
     public List<AdminAppRec> getAdminAppList(EAdminAppStatus appStatus, int offset, int count) {
         return new AdminAppRec(getPoolName()).getList(appStatus, offset, count);
     }
 
-    public List<AdminAppRec> getAdminAppList(String email, EAdminAppStatus appStatus, int offset, int count) {
-        return new AdminAppRec(getPoolName()).getList(email, appStatus, offset, count);
+    public List<AdminAppRec> getAdminAppList(String uid, EAdminAppStatus appStatus, int offset, int count) {
+        return new AdminAppRec(getPoolName()).getList(uid, appStatus, offset, count);
     }
 
-    public int getAdminAppCount(String email, EAdminAppStatus appStatus) {
-        return new AdminAppRec(getPoolName()).getAppCount(email, appStatus);
+    public int getAdminAppCount(String uid, EAdminAppStatus appStatus) {
+        return new AdminAppRec(getPoolName()).getAppCount(uid, appStatus);
     }
 
     public boolean hasAdminSCode(String scode) {
         return new AdminAppRec(getPoolName()).hasSCode(scode);
     }
 
-    public boolean upsertAdminToken(String email, String token, String remoteIp) {
-        if(getAdminToken(email)==null)
-            return new AdminTokenRec(getPoolName()).insert(email, token, remoteIp);
-        return new AdminTokenRec(getPoolName()).update(email, token, remoteIp);
+    public boolean upsertAdminToken(String uid, String token, String remoteIp) {
+        if(getAdminToken(uid)==null)
+            return new AdminTokenRec(getPoolName()).insert(uid, token, remoteIp);
+        return new AdminTokenRec(getPoolName()).update(uid, token, remoteIp);
     }
 
-    private boolean addAdminToken(String email, String token, String remoteIp) {
-        return new AdminTokenRec(getPoolName()).insert(email, token, remoteIp);
+    public boolean addAdminToken(String uid, String token, String remoteIp) {
+        return new AdminTokenRec(getPoolName()).insert(uid, token, remoteIp);
     }
-    private boolean updateAdminToken(String email, String token, String remoteIp) {
-        return new AdminTokenRec(getPoolName()).update(email, token, remoteIp);
-    }
-
-    public boolean updateAdminToken(String email, String token) {
-        return new AdminTokenRec(getPoolName()).update(email, token);
+    private boolean updateAdminToken(String uid, String token, String remoteIp) {
+        return new AdminTokenRec(getPoolName()).update(uid, token, remoteIp);
     }
 
-    public boolean delAdminToken(String email) {
-        return new AdminTokenRec(getPoolName()).delete(email);
+    public boolean updateAdminToken(String uid, String token) {
+        return new AdminTokenRec(getPoolName()).update(uid, token);
     }
 
-    public AdminTokenRec getAdminToken(String email) {
-        return new AdminTokenRec(getPoolName()).getToken(email);
+    public boolean delAdminToken(String uid) {
+        return new AdminTokenRec(getPoolName()).delete(uid);
     }
 
-    public boolean updateAdminTokenLasttime(String email) {
-        return new AdminTokenRec(getPoolName()).updateLasttime(email);
+    public AdminTokenRec getAdminToken(String uid) {
+        return new AdminTokenRec(getPoolName()).getToken(uid);
     }
 
-    public boolean isAvailableToken(String email, String token, String remoteIp) {
-        return new AdminTokenRec(getPoolName()).isAvailableToken(email, token, remoteIp);
+    public boolean updateAdminTokenLasttime(String uid) {
+        return new AdminTokenRec(getPoolName()).updateLasttime(uid);
+    }
+
+    public boolean isAvailableToken(String uid, String token) {
+        return new AdminTokenRec(getPoolName()).isAvailableToken(uid, token);
     }
 }

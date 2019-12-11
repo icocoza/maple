@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @Getter
 public class UserAuthRec extends DbRecord {
 
+    private String uid;
     private String userId;
-    private String userName;
     private String email;
     private String phone;
     private String pw;
@@ -34,8 +34,8 @@ public class UserAuthRec extends DbRecord {
     @Override
     protected DbRecord doLoad(DbReader rd, DbRecord r) {
         UserAuthRec rec = (UserAuthRec)r;
+        rec.uid = rd.getString("uid");
         rec.userId = rd.getString("userId");
-        rec.userName = rd.getString("userName");
         rec.email = rd.getString("email");
         rec.phone = rd.getString("phone");
         rec.pw = rd.getString("pw");
@@ -57,41 +57,41 @@ public class UserAuthRec extends DbRecord {
         return doLoad(rd, new UserAuthRec(super.poolName));
     }
 
-    public DbRecord insertUserIdPw(String userId, String userName, String pw) {
-        return super.insert(qInsertUserIdPw(userId, userName, pw)) ? this : DbRecord.Empty;
+    public DbRecord insertUserIdPw(String uid, String userId, String pw) {
+        return super.insert(qInsertUserIdPw(uid, userId, pw)) ? this : DbRecord.Empty;
     }
 
-    static public String qInsertUserIdPw(String userId, String userName, String pw) {
+    static public String qInsertUserIdPw(String uid, String userId, String pw) {
         pw = StrUtils.getSha256(pw);
-        return String.format("INSERT INTO userAuth (userId, userName, pw, authType) VALUES('%s', '%s', '%s', '%s')",
-                userId, userName, pw, EUserAuthType.idpw);
+        return String.format("INSERT INTO userAuth (uid, userId, pw, authType) VALUES('%s', '%s', '%s', '%s')",
+                uid, userId, pw, EUserAuthType.idpw);
     }
 
-    public DbRecord insertEmail(String userId, String email) {
-        return super.insert(qInsertEmail(userId, email)) ? this : DbRecord.Empty;
+    public DbRecord insertEmail(String uid, String email) {
+        return super.insert(qInsertEmail(uid, email)) ? this : DbRecord.Empty;
     }
 
-    static public String qInsertEmail(String userId, String email) {
-        return String.format("INSERT INTO userAuth (userId, email, authType) VALUES('%s', '%s', '%s')",
-                userId, email, EUserAuthType.email);
+    static public String qInsertEmail(String uid, String email) {
+        return String.format("INSERT INTO userAuth (uid, email, authType) VALUES('%s', '%s', '%s')",
+                uid, email, EUserAuthType.email);
     }
 
-    public DbRecord insertPhoneNo(String userId, String phone) {
-        return super.insert(qInsertPhoneNo(userId, phone)) ? this : DbRecord.Empty;
+    public DbRecord insertPhoneNo(String uid, String phone) {
+        return super.insert(qInsertPhoneNo(uid, phone)) ? this : DbRecord.Empty;
     }
 
-    static public String qInsertPhoneNo(String userId, String phone) {
-        return String.format("INSERT INTO userAuth (userId, phone, authType) VALUES('%s', '%s', '%s')",
-                userId, phone, EUserAuthType.phone);
+    static public String qInsertPhoneNo(String uid, String phone) {
+        return String.format("INSERT INTO userAuth (uid, phone, authType) VALUES('%s', '%s', '%s')",
+                uid, phone, EUserAuthType.phone);
     }
 
-    public UserAuthRec getUser(String userId) {
-        String sql = String.format("SELECT * FROM userAuth WHERE userId='%s'", userId);
+    public UserAuthRec getUser(String uid) {
+        String sql = String.format("SELECT * FROM userAuth WHERE uid='%s'", uid);
         return (UserAuthRec) super.getOne(sql);
     }
 
-    public UserAuthRec getUserByUserName(String userName) {
-        String sql = String.format("SELECT * FROM userAuth WHERE userName='%s'", userName);
+    public UserAuthRec getUserByUserId(String userId) {
+        String sql = String.format("SELECT * FROM userAuth WHERE userId='%s'", userId);
         return (UserAuthRec) super.getOne(sql);
     }
 
@@ -105,24 +105,24 @@ public class UserAuthRec extends DbRecord {
         return (UserAuthRec) super.getOne(sql);
     }
 
-    public EUserAuthType findUserAuth(String userName, String email, String phone) {
-        String sql = String.format("SELECT * FROM userAuth WHERE userName='%s' OR email='%s' OR phone='%s'", userName, email, phone);
+    public EUserAuthType findUserAuth(String userId, String email, String phone) {
+        String sql = String.format("SELECT * FROM userAuth WHERE userId='%s' OR email='%s' OR phone='%s'", userId, email, phone);
         UserAuthRec auth = (UserAuthRec) super.getOne(sql);
         if(DbRecord.Empty == auth)
             return EUserAuthType.none;
         return auth.authType;
     }
 
-    public boolean findUserName(String userName) {
-        String sql = String.format("SELECT * FROM userAuth WHERE userName='%s'", userName);
+    public boolean findUserId(String userId) {
+        String sql = String.format("SELECT * FROM userAuth WHERE userId='%s'", userId);
         UserAuthRec user = (UserAuthRec) super.getOne(sql);
         if(DbRecord.Empty == user)
             return false;
         return true;
     }
 
-    public String findUserIdByUserName(String userName) {
-        String sql = String.format("SELECT * FROM userAuth WHERE userName='%s'", userName);
+    public String findUidByUserId(String userId) {
+        String sql = String.format("SELECT * FROM userAuth WHERE userId='%s'", userId);
         UserAuthRec user = (UserAuthRec) super.getOne(sql);
         if(DbRecord.Empty == user)
             return null;
@@ -144,13 +144,13 @@ public class UserAuthRec extends DbRecord {
         return true;
     }
 
-    public boolean updatePw(String userName, String pw) {
-        return super.update(qUpdatePw(userName, pw));
+    public boolean updatePw(String uid, String pw) {
+        return super.update(qUpdatePw(uid, pw));
     }
 
-    static public String qUpdatePw(String userName, String pw) {
+    static public String qUpdatePw(String uid, String pw) {
         pw = StrUtils.getSha256(pw);
-        return String.format("UPDATE userAuth SET pw='%s' WHERE userName='%s'", pw, userName);
+        return String.format("UPDATE userAuth SET pw='%s' WHERE uid='%s'", pw, uid);
     }
 
     public boolean updateEmailCode(String email, String emailCode) {
@@ -169,28 +169,28 @@ public class UserAuthRec extends DbRecord {
         return String.format("UPDATE userAuth SET smsCode='%s' WHERE phone='%s'", smsCode, phone);
     }
 
-    public boolean updateUserQuit(String userId) {
-        String sql = String.format("UPDATE userAuth SET authType='%s' WHERE userId='%s'", EUserAuthType.quit, userId);
+    public boolean updateUserQuit(String uid) {
+        String sql = String.format("UPDATE userAuth SET authType='%s' WHERE uid='%s'", EUserAuthType.quit, uid);
         return super.update(sql);
     }
 
-    public boolean deleteUserId(String userId) {
-        String sql = String.format("DELETE FROM userAuth WHERE userId='%s'", userId);
+    public boolean deleteUser(String uid) {
+        String sql = String.format("DELETE FROM userAuth WHERE uid='%s'", uid);
         return super.delete(sql);
     }
 
-    public boolean isSameAuthId(EUserAuthType authType, String userId ) {
-        if(EUserAuthType.idpw == authType && this.userId != null && this.userName.equals(userId))
+    public boolean isSameAuthId(EUserAuthType authType, String uid ) {
+        if(EUserAuthType.idpw == authType && this.uid != null && this.userId.equals(uid))
             return true;
-        if(EUserAuthType.email == authType && this.email != null && this.email.equals(userId))
+        if(EUserAuthType.email == authType && this.email != null && this.email.equals(uid))
             return true;
-        if(EUserAuthType.phone == authType && this.phone != null && this.phone.equals(userId))
+        if(EUserAuthType.phone == authType && this.phone != null && this.phone.equals(uid))
             return true;
         return false;
     }
 
-    public boolean isSameUserName(String userName) {
-        return this.userName!=null && this.userName.equals(userName);
+    public boolean isSameUserName(String userId) {
+        return this.userId!=null && this.userId.equals(userId);
     }
 
     public boolean isSamePw(String pw) {

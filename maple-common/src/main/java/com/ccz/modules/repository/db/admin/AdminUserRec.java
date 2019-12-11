@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = false)
 public class AdminUserRec extends DbRecord {
 
+    private String uid;
     private String email;
     private String password;
     private EAdminStatus adminStatus;
@@ -45,6 +46,7 @@ public class AdminUserRec extends DbRecord {
     @Override
     protected DbRecord doLoad(DbReader rd, DbRecord r) {
         AdminUserRec rec = (AdminUserRec)r;
+        rec.uid = rd.getString("uid");
         rec.email = rd.getString("email");
         rec.password = rd.getString("password");
         rec.adminStatus = EAdminStatus.getType(rd.getString("adminStatus"));
@@ -70,40 +72,45 @@ public class AdminUserRec extends DbRecord {
     }
 
     ////////////////// Queries /////////////////////
-    public boolean insert(String email, String password, EUserRole userRole, String userName) {
+    public boolean insert(String uid, String email, String password, EUserRole userRole, String userName) {
+        this.uid = uid;
         this.email = email;
         this.password = password;
         this.userRole = userRole;
         this.userName = userName;
-        String sql = String.format("INSERT INTO adminUser (email, password, userRole, userName) "
-                        + "VALUES('%s', '%s', '%s', '%s')",
-                email, password, userRole.getValue(), userName);
+        String sql = String.format("INSERT INTO adminUser (uid, email, password, userRole, userName) "
+                        + "VALUES('%s', '%s', '%s', '%s', '%s')",  uid, email, password, userRole.getValue(), userName);
         return super.insert(sql);
     }
 
-    public AdminUserRec getUser(String email) {
+    public AdminUserRec getUserByUid(String uid) {
+        String sql = String.format("SELECT * FROM adminUser WHERE uid='%s'",  uid);
+        return (AdminUserRec) super.getOne(sql);
+    }
+
+    public AdminUserRec getUserByEmail(String email) {
         String sql = String.format("SELECT * FROM adminUser WHERE email='%s'",  email);
         return (AdminUserRec) super.getOne(sql);
     }
 
-    public AdminUserRec getUser(String email, String password) {
-        String sql = String.format("SELECT * FROM adminUser WHERE email='%s' AND password='%s'",  email, password);
+    public AdminUserRec getUserByEmailPassword(String uid, String password) {
+        String sql = String.format("SELECT * FROM adminUser WHERE uid='%s' AND password='%s'",  uid, password);
         return (AdminUserRec) super.getOne(sql);
     }
 
-    public boolean updateLastVisit(String email) {
-        String sql = String.format("UPDATE adminUser SET lastAt=now() WHERE email='%s'",  email);
+    public boolean updateLastVisit(String uid) {
+        String sql = String.format("UPDATE adminUser SET lastAt=now() WHERE uid='%s'",  uid);
         return super.update(sql);
     }
 
-    public boolean updateLeave(String email) {
-        String sql = String.format("UPDATE adminUser SET password='', leftAt=now(), lastAt=now() WHERE email='%s'",  email);
+    public boolean updateLeave(String uid) {
+        String sql = String.format("UPDATE adminUser SET password='', leftAt=now(), lastAt=now() WHERE uid='%s'",  uid);
         return super.update(sql);
     }
 
-    public boolean updatePassword(String email, String oldPass, String newPass) {
+    public boolean updatePassword(String uid, String oldPass, String newPass) {
         String sql = String.format("UPDATE adminUser SET password='%s', lastPassword='%s', passwordAt=now(), lastAt=now() " +
-                "WHERE email='%s' AND password='%s",  newPass, oldPass, email, oldPass);
+                "WHERE uid='%s' AND password='%s",  newPass, oldPass, uid, oldPass);
         return super.update(sql);
     }
 

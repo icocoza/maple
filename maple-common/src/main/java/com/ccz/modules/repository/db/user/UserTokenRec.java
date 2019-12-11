@@ -53,8 +53,8 @@ public class UserTokenRec extends DbRecord {
         return (UserTokenRec) super.getOne(sql);
     }
 
-    public UserTokenRec getTokenByTokenId(String tokenId) {
-        String sql = String.format("SELECT * FROM userToken WHERE tokenId='%s'", tokenId);
+    public UserTokenRec getToken(String userId, String uuid) {
+        String sql = String.format("SELECT * FROM userToken WHERE userId='%s' and uuid='%s'", userId, uuid);
         return (UserTokenRec) super.getOne(sql);
     }
 

@@ -21,16 +21,16 @@ public class AdminForm {
     @Data
     @EqualsAndHashCode(callSuper = false)
     public class AdminCommonForm extends CommonForm{
-        @ApiModelProperty(value="이메일 주소", example="email@test.com", required=true)
-        private String email;
-        @ApiModelProperty(value="토큰", example="token string", hidden=true)
-        private String token;
+        @ApiModelProperty(value="User ID", example="uid:xxxxxxxxx")
+        private String uid;
     }
 
     @ApiModel(description = "Add User Form")
     @Data
     @EqualsAndHashCode(callSuper = false)
     public class AdminUserForm extends AdminCommonForm {
+        @ApiModelProperty(value="Email", example="test@email.com", required=true)
+        private String email;
         @ApiModelProperty(value="패스워드", example="*****", required=true)
         private String password;
         @ApiModelProperty(value="상태", hidden = true)
@@ -45,6 +45,8 @@ public class AdminForm {
     @Data
     @EqualsAndHashCode(callSuper = false)
     public class AdminLoginForm extends AdminCommonForm {
+        @ApiModelProperty(value="Email", example="test@email.com", required=true)
+        private String email;
         @ApiModelProperty(value="패스워드", example="*****", required=true)
         private String password;
     }
@@ -53,6 +55,8 @@ public class AdminForm {
     @Data
     @EqualsAndHashCode(callSuper = false)
     public class AdminLogoutForm extends AdminCommonForm {
+        @ApiModelProperty(value="Token", example="token string", required=true)
+        private String token;
     }
 
     @ApiModel(description = "Add App Form")
@@ -61,6 +65,8 @@ public class AdminForm {
     public class AddAppForm extends AdminCommonForm {
         @ApiModelProperty(value="Service Code(Unique)", example="MAPLE_APP", required=true)
         private String scode;
+        @ApiModelProperty(value="Token", example="token string", required=true)
+        private String token;
         @ApiModelProperty(value="앱 타이틀", example="서비스 앱", required=true)
         private String title;
         @ApiModelProperty(value="앱 설명", example="좋은앱", required=true)
@@ -73,6 +79,9 @@ public class AdminForm {
         private String fcmKey;
 
         //Optional, 외부 DB 사용시
+        @ApiModelProperty(value="External DB 사용유무", required = true)
+        private boolean useExternalDb = false;
+
         @ApiModelProperty(value="DB Host", example="10.10.10.10")
         private String dbHost;
         @ApiModelProperty(value="DB Options", example="zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8&connectTimeout=2000&autoReconnect=true&serverTimezone=UTC&useSSL=false")
@@ -93,6 +102,8 @@ public class AdminForm {
     public class DelAppForm extends AdminCommonForm {
         @ApiModelProperty(value="Service Code(Unique)", example="MAPLE_APP")
         private String scode;
+        @ApiModelProperty(value="Token", example="token string", required=true)
+        private String token;
         @ApiModelProperty(value="패스워드", example="*****", required=true)
         private String password;
     }
@@ -101,6 +112,8 @@ public class AdminForm {
     @Data
     @EqualsAndHashCode(callSuper = false)
     public class AppListForm extends AdminCommonForm {
+        @ApiModelProperty(value="Token", example="token string", required=true)
+        private String token;
         @ApiModelProperty(value="리스트 시작 옵셋", example="0", required=true)
         private int offset = 0;
         @ApiModelProperty(value="요청 갯수", example="1000", required=true)
@@ -123,6 +136,8 @@ public class AdminForm {
     @Data
     @EqualsAndHashCode(callSuper = false)
     public class AppCountForm extends AdminCommonForm {
+        @ApiModelProperty(value="Token", example="token string", required=true)
+        private String token;
         @ApiModelProperty(value="앱 상태", example="all", required=true)
         private EAdminAppStatus appStatus;
     }

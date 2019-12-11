@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public enum EAdminCmd {
-    none("none"), 	adminregister("adminregister"), adminlogin("adminlogin"), adminlogout("adminlogout"),
-    addapp("addapp"), delapp("delapp"), applist("applist"), modifyapp("modifyapp"),
-    appcount("appcount"), stopapp("stopapp"), runapp("runapp"), readyapp("readyapp");
+    none("none"), 	adminRegister("adminRegister"), adminLogin("adminLogin"), adminLogout("adminLogout"),
+    adminAddApp("adminAddApp"), adminDelApp("adminDelApp"), adminAppList("adminAppList"), adminModifyApp("adminModifyApp"),
+    adminAppCount("adminAppCount"), adminStopApp("adminStopApp"), adminRunApp("adminRunApp"), adminReadyApp("adminReadyApp");
 
 
     @Getter

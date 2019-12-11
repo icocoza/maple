@@ -31,8 +31,8 @@ public class UserCommonRepository extends CommonRepository {
         return (UserTokenRec) new UserTokenRec(scode).getTokenByUserId(userId);
     }
 
-    public UserTokenRec getUserTokenByTokenId(String scode, String tokenid) {
-        return (UserTokenRec) new UserTokenRec(scode).getTokenByTokenId(tokenid);
+    public UserTokenRec getUserToken(String scode, String userId, String uuid) {
+        return (UserTokenRec) new UserTokenRec(scode).getToken(userId, uuid);
     }
 
     public UserTokenRec getUserTokenByUserTokenId(String scode, String userId, String tokenid) {
@@ -88,8 +88,8 @@ public class UserCommonRepository extends CommonRepository {
         return new UserAuthRec(scode).findUserAuth(userName, email, phoneno);
     }
 
-    public boolean findUserName(String scode, String userName) {
-        return new UserAuthRec(scode).findUserName(userName);
+    public boolean findUserId(String scode, String userId) {
+        return new UserAuthRec(scode).findUserId(userId);
     }
 
     public String findUserIdByUserName(String scode, String userName) {

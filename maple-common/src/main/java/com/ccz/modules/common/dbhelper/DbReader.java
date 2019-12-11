@@ -171,7 +171,7 @@ public class DbReader {
         {
             Timestamp timeStamp = rs.getTimestamp(field);
             if(timeStamp != null)
-                timeStamp.toLocalDateTime();
+                return timeStamp.toLocalDateTime();
             return null;
         }
         catch (SQLException e) {

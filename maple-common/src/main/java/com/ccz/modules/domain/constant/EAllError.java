@@ -2,6 +2,9 @@ package com.ccz.modules.domain.constant;
 
 public enum EAllError {
 	ok,
+	NoServiceCode,
+	NotAvailableServiceCode,
+
 	//for EAddrError
 	invalid_command,
 	failed_search,
@@ -62,14 +65,14 @@ public enum EAllError {
 	
 	//EAdminError
 	invalid_email_format,
-	already_exist_email,
+
 	short_password_length_than_8,
 	register_failed,
 
 	/*for the add app*/
-	already_exist_scode,
-	not_exist_scode,
-	scode_allowed_only_alphabet,
+	AlreadyExistScode,
+	NotExistScode,
+	ScodeAllowedOnlyAlphabet,
 	failed_to_create_app_database,
 	invalid_db_parameter,
 	failed_to_add_app,
@@ -89,12 +92,16 @@ public enum EAllError {
 	unknown_datatype,
 	
 	failed_register,
-	already_exist_username,
-	already_exist_phoneno,
+	ExistUserId,
+	NotExistUserId,
+	ExistPhoneNo,
+	ExistEmail,
+	appTokenNotExist,
+	appTokenNotValidated,
 	
-	userid_more_than_4,
+	userIdMoreThan6Characters,
 	userid_alphabet_and_digit,
-	pass_more_than_6,
+	passwordMoreThan8Characters,
 	
 	invalid_phoneno_format,
 	smscode_size_4,
@@ -102,27 +109,35 @@ public enum EAllError {
 	
 	invalid_app_token,
 	invalid_user_token,
-	invalid_user_tokenid,
-	invalid_user_uuid,
+	ExpiredOrDifferentLoginToken,
+	ExpiredLoginToken,
+	ExpiredSigninToken,
+	InvalidUUID,
 	unauthorized_token,
-	
+	InvalidAdminToken,
+	InvalidLoginToken,
+	InvalidSigninToken,
+	MightBeLeftUser,
+
 	mismatch_token,
-	not_exist_user,
+	NotExistUserAuth,
 	not_exist_userinfo,
 	not_exist_building,
-	
+
+	ExpiredAdminToken,
 	invalid_or_expired_token,
-	unauthorized_userid,
-	invalid_user,
-	invalid_uuid,
+	UnauthorizedUserId,
+	UnauthorizedAnonymousUserId,
+	InvalidUser,
 	failed_email_verify,
 	failed_phone_Verify,
-	failed_change_pw,
+	FailToChangePW,
 	failed_update_token,
 	mismatch_pw,
+	WrongPassword,
 	
 	eNotExistIds,
-	
+	FailToCreateAnonymousAccount,
 	//EBoardError
 	NoSession,
 	FailAddBoard,
@@ -185,7 +200,9 @@ public enum EAllError {
 	eNoServiceCommand,
 
 	unauthorized_user,
-	unauthorized_or_expired_user,
+	UnauthorizedOrExpiredUser,
+	//New
+	FailToMakePooling,
 
 	unknown_error
 	

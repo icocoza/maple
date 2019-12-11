@@ -1,10 +1,7 @@
 package com.ccz.modules.controller.user;
 
 
-import com.ccz.modules.common.action.ChAttributeKey;
-import com.ccz.modules.common.action.CommandAction;
-import com.ccz.modules.common.action.ResponseData;
-import com.ccz.modules.common.action.SessionManager;
+import com.ccz.modules.common.action.*;
 import com.ccz.modules.common.dbhelper.DbRecord;
 import com.ccz.modules.common.repository.CommonRepository;
 import com.ccz.modules.common.repository.TransactionQuery;
@@ -43,19 +40,23 @@ public class UserCommandCommonAction extends CommandAction {
         this.userCommonRepository = (UserCommonRepository)commonRepository;
 
         sessionManager = SessionManager.getInst();
-        super.setCommandFunction(makeCommandId(EUserCmd.findId), doFindId);
-        super.setCommandFunction(makeCommandId(EUserCmd.regIdPw), doRegIdPw);
-        super.setCommandFunction(makeCommandId(EUserCmd.regEmail), doRegEmail);
-        super.setCommandFunction(makeCommandId(EUserCmd.regPhone), doRegPhone);
-        super.setCommandFunction(makeCommandId(EUserCmd.login), doLogin);
-        super.setCommandFunction(makeCommandId(EUserCmd.anonymousLogin), doAnonyLogin);
-        super.setCommandFunction(makeCommandId(EUserCmd.signIn), doSignin);
-        super.setCommandFunction(makeCommandId(EUserCmd.anonymousSignin), doSignin);
-        super.setCommandFunction(makeCommandId(EUserCmd.changePw), doUpdatePW);
-        super.setCommandFunction(makeCommandId(EUserCmd.updateEmail), doUpdateEmail);
-        super.setCommandFunction(makeCommandId(EUserCmd.updatePhone), doUpdatePhoneNo);
-        //super.setCommandFunction(makeCommandId(EUserCmd.verifyEmail), null);
-        super.setCommandFunction(makeCommandId(EUserCmd.verifySms), doVerifyPhoneNo);
+        super.setCommandFunction(makeCommandId(EUserCmd.registerIdPw), registerIdPw);
+        super.setCommandFunction(makeCommandId(EUserCmd.registerEmail), registerEmail);
+        super.setCommandFunction(makeCommandId(EUserCmd.registerPhone), registerPhone);
+
+        super.setCommandFunction(makeCommandId(EUserCmd.userLogin), userLogin);
+        super.setCommandFunction(makeCommandId(EUserCmd.userSignIn), userSignIn);
+
+        super.setCommandFunction(makeCommandId(EUserCmd.anonymousLogin), anonymousLogin);
+        super.setCommandFunction(makeCommandId(EUserCmd.anonymousSignIn), userSignIn);
+
+        super.setCommandFunction(makeCommandId(EUserCmd.userFindId), userFindId);
+        super.setCommandFunction(makeCommandId(EUserCmd.userChangePW), userChangePW);
+        super.setCommandFunction(makeCommandId(EUserCmd.userChangeEmail), userChangeEmail);
+        super.setCommandFunction(makeCommandId(EUserCmd.userChangePhone), userChangePhone);
+
+        super.setCommandFunction(makeCommandId(EUserCmd.userVerifyEmail), userVerifyEmail);
+        super.setCommandFunction(makeCommandId(EUserCmd.userVerifySms), userVerifySms);
     }
 
     @Override
@@ -63,277 +64,269 @@ public class UserCommandCommonAction extends CommandAction {
         return "" + e.name();
     }
 
-    ICommandFunction<AuthSession, ResponseData<EAllError>, FindIdForm> doFindId = (AuthSession authSession, ResponseData<EAllError> res, FindIdForm form) -> {
-        if(form.getUserName().getBytes().length < 4)
-            return res.setError(EAllError. userid_more_than_4);
-        if(userCommonRepository.findUserName(form.getScode(), form.getUserName()) == true )
-            return res.setError(EAllError.already_exist_username);
-        return res.setError(EAllError.ok);
-    };
-
     /*User Register Commands*/
-    ICommandFunction<AuthSession, ResponseData<EAllError>, IdPwForm> doRegIdPw = (AuthSession authSession, ResponseData<EAllError> res, IdPwForm form) -> {
+    ICommandFunction<AuthSession, ResponseData<EAllError>, IdPwForm> registerIdPw = (AuthSession authSession, ResponseData<EAllError> res, IdPwForm form) -> {
+        if(form.getUserId().length()<6)
+            return res.setError(EAllError. userIdMoreThan6Characters);
+//        if(StrUtils.isAlphaNumeric(form.getUserName())==false)
+//            return res.setError(EAllError.userid_alphabet_and_digit);
+        if(form.getPw().length()<8)
+            return res.setError(EAllError.passwordMoreThan8Characters);
+        if(form.getAppToken() == null || form.getAppToken().length() < 1)
+            return res.setError(EAllError.appTokenNotExist);
 
-        if(form.getUserName().length()<4)
-            return res.setError(EAllError. userid_more_than_4);
-        if(StrUtils.isAlphaNumeric(form.getUserName())==false)
-            return res.setError(EAllError.userid_alphabet_and_digit);
-        if(form.getPw().length()<6)
-            return res.setError(EAllError.pass_more_than_6);
+        AppTokenHelper app = new AppTokenHelper(form.getAppToken());  //check scode and init db pooling
+        if(app.getError() != EAllError.ok)
+            return res.setError(app.getError());
 
-        if( userCommonRepository.findUserName(form.getScode(), form.getUserName()) == true )
-            return res.setError(EAllError.already_exist_username);
+        if( userCommonRepository.findUserId(app.getScode(), form.getUserId()) == true )
+            return res.setError(EAllError.ExistUserId);
 
-        String userId = KeyGen.makeKeyWithSeq("userId");
-        String authQuery = TransactionQuery.qInsertUserIdPw(userId, form.getUserName(), form.getPw());
-        return doRegisterUser(res, userId, form.getUserName(), authQuery, form, false);
+        return doRegisterUser(res, app.getScode(), form, false);
     };
 
-    ICommandFunction<AuthSession, ResponseData<EAllError>, EmailForm> doRegEmail = (AuthSession authSession, ResponseData<EAllError> res, EmailForm form) -> {
+    ICommandFunction<AuthSession, ResponseData<EAllError>, EmailForm> registerEmail = (AuthSession authSession, ResponseData<EAllError> res, EmailForm form) -> {
         if(StrUtils.isEmail(form.getEmail()) == false)
             return res.setError(EAllError.invalid_email_format);
 
-        if( userCommonRepository.findEmail(form.getScode(), form.getEmail()) == true )
-            return res.setError(EAllError.already_exist_email);
+        AppTokenHelper app = new AppTokenHelper(form.getAppToken());  //check scode and init db pooling
+        if(app.getError() != EAllError.ok)
+            return res.setError(app.getError());
 
-        String userId = KeyGen.makeKeyWithSeq("userId");
-        String authQuery = TransactionQuery.queryInsertEmail(userId, form.getEmail());
-        return doRegisterUser(res, userId, form.getEmail(), authQuery, form, false);
+        if( userCommonRepository.findEmail(app.getScode(), form.getEmail()) == true )
+            return res.setError(EAllError.ExistEmail);
+
+        return doRegisterUser(res, app.getScode(), form, false);
     };
 
-    ICommandFunction<AuthSession, ResponseData<EAllError>, MobileForm> doRegPhone = (AuthSession authSession, ResponseData<EAllError> res, MobileForm form) -> {
+    ICommandFunction<AuthSession, ResponseData<EAllError>, MobileForm> registerPhone = (AuthSession authSession, ResponseData<EAllError> res, MobileForm form) -> {
         if(StrUtils.isPhone(form.getPhone()) == false)
             return res.setError(EAllError.invalid_phoneno_format);
 
-        if( userCommonRepository.findPhoneno(form.getScode(), form.getPhone()) == true )
-            return res.setError(EAllError.already_exist_phoneno);
+        AppTokenHelper app = new AppTokenHelper(form.getAppToken());  //check scode and init db pooling
+        if(app.getError() != EAllError.ok)
+            return res.setError(app.getError());
 
-        String userId = KeyGen.makeKeyWithSeq("userId");
-        String authQuery = TransactionQuery.queryInsertEmail(userId, form.getPhone());
-        return doRegisterUser(res, userId, form.getPhone(), authQuery, form, false);
+        if( userCommonRepository.findPhoneno(app.getScode(), form.getPhone()) == true )
+            return res.setError(EAllError.ExistPhoneNo);
+
+        return doRegisterUser(res, app.getScode(), form, false);
     };
 
-    private ResponseData<EAllError> doRegisterUser(ResponseData<EAllError> res, String userId, String userName, String authQuery, RegisterForm form, boolean enableToken) {
-        String tokenId = StrUtils.getSha1Uuid("tokenId");
-        String token = Crypto.AES256Cipher.getInst().enc(userName+ AsciiSplitter.ASS.UNIT+form.getUuid()+ AsciiSplitter.ASS.UNIT+form.getAuthType());
+    private ResponseData<EAllError> doRegisterUser(ResponseData<EAllError> res, String scode, RegisterForm form, boolean enableToken) {
+        String uid = KeyGen.makeKeyWithSeq("uid:"); //user id
+        String authQuery = "";
+        String userId = form.getUserId();
+        switch(form.getAuthType()) {
+            case idpw:
+                authQuery = TransactionQuery.qInsertUserIdPw(uid, userId, ((IdPwForm)form).getPw());
+                break;
+            case email:
+                userId = ((EmailForm)form).getEmail();
+                authQuery = TransactionQuery.queryInsertEmail(uid, userId);
+                break;
+            case phone:
+                userId = ((MobileForm)form).getPhone();
+                authQuery = TransactionQuery.queryInsertEmail(uid, userId);
+                break;
+        }
+        //String userTokenId = StrUtils.getSha1Uuid("utid:"); //user token id
+        //String userToken = Crypto.AES256Cipher.getInst().enc(scode+AsciiSplitter.ASS.UNIT+userName+ AsciiSplitter.ASS.UNIT+form.getUuid()+ AsciiSplitter.ASS.UNIT+form.getAuthType());
+        Token token = new Token().enc(scode, uid, form.getUuid(), form.getAuthType());
 
         List<String> queries = new ArrayList<>();
         queries.add(authQuery);
-        queries.add(TransactionQuery.queryInsertUser(userId, form.getUserName(), form.isAnonymous()));
-        queries.add(TransactionQuery.queryInsertToken(userId, form.getUuid(), tokenId, token, enableToken));
-        if(userCommonRepository.multiQueries(form.getScode(), queries)==false)
+        queries.add(TransactionQuery.queryInsertUser(uid, form.getUserId(), form.isAnonymous()));
+        queries.add(TransactionQuery.queryInsertToken(uid, form.getUuid(), token.getTokenId(), token.getToken(), enableToken));
+        if(userCommonRepository.multiQueries(scode, queries)==false)
             return res.setError(EAllError.failed_register);
-
-        return res.setParam("tokenId", tokenId).setParam("token", token).setError(EAllError.ok);
+        return res.setParam("loginToken", token.getToken()).setParam("scode", SCodeManager.getBase64(scode)).setError(EAllError.ok);
     }
 
     /*User Auth Commands*/
-    ICommandFunction<AuthSession, ResponseData<EAllError>, LoginForm> doLogin = (AuthSession authSession, ResponseData<EAllError> res, LoginForm form) -> {
-        UserAuthRec auth = userCommonRepository.getUserAuthByUserName(form.getScode(), form.getUserName());
+    ICommandFunction<AuthSession, ResponseData<EAllError>, LoginForm> userLogin = (AuthSession authSession, ResponseData<EAllError> res, LoginForm form) -> {
+        AppTokenHelper app = new AppTokenHelper(form.getAppToken());  //check scode and init db pooling
+        if(app.getError() != EAllError.ok)
+            return res.setError(app.getError());
+
+        UserAuthRec auth = userCommonRepository.getUserAuthByUserName(app.getScode(), form.getUserId());
         if(DbRecord.Empty == auth)
-            return res.setError(EAllError.not_exist_user);
-        if(auth.isSamePw(form.getPw())==false)
-            return res.setError(EAllError.invalid_user);
+            return res.setError(EAllError.NotExistUserAuth);
 
-        UserTokenRec recToken = userCommonRepository.getUserTokenByUserId(form.getScode(), auth.getUserId());
+        if(auth.getAuthType() == EUserAuthType.idpw && auth.isSamePw(form.getPw())==false)  //ID/PW 검사
+            return res.setError(EAllError.InvalidUser);
+
+        UserTokenRec recToken = userCommonRepository.getUserTokenByUserId(app.getScode(), auth.getUserId());
         if(recToken==DbRecord.Empty)
-            return res.setError(EAllError.unauthorized_userid);
+            return res.setError(EAllError.UnauthorizedUserId);
 
-        if(recToken.getUuid().equals(form.getUuid()) == true) {
-            String token = Crypto.AES256Cipher.getInst().enc(form.getScode(), form.getUserName()+ASS.UNIT+form.getUuid()+ASS.UNIT+auth.getAuthType());
-            userCommonRepository.updateToken(form.getScode(), auth.getUserId(), recToken.getTokenId(), token, true);
-            return res.setParam("token", token).setError(EAllError.ok);
+        if(recToken.getUuid().equals(form.getUuid()) == true) { //device uuid가 동일하면 기존 토큰 사용
+            Token token = new Token().enc(app.getScode(), auth.getUserId(), form.getUuid(), form.getAuthType());
+            userCommonRepository.updateToken(app.getScode(), auth.getUserId(), recToken.getTokenId(), token.getToken(), true);
+            return res.setParam("loginToken", token.getToken()).setError(EAllError.ok);
         }
 
-        String tokenId = StrUtils.getSha1Uuid("tokenId");
-        String token = Crypto.AES256Cipher.getInst().enc(form.getScode(), form.getUserName()+ASS.UNIT+tokenId+ASS.UNIT+form.getUuid()+ASS.UNIT+ EUserAuthType.idpw.getValue());
+        //if different uuid,, make new token
+        Token token = new Token().enc(app.getScode(), auth.getUserId(), form.getUuid(), form.getAuthType());
+        //String tokenId = StrUtils.getSha1Uuid("tokenId");
+        //String userToken = Crypto.AES256Cipher.getInst().enc(form.getScode(), form.getUserName()+ASS.UNIT+tokenId+ASS.UNIT+form.getUuid()+ASS.UNIT+ EUserAuthType.idpw.getValue());
         List<String> queries = new ArrayList<>();
-        queries.add(TransactionQuery.queryDeleteTokenByUuid(auth.getUserId(), recToken.getUuid()));
-        queries.add(TransactionQuery.queryInsertToken(auth.getUserId(), form.getUuid(), tokenId, token, true));
-        if(userCommonRepository.multiQueries(form.getScode(), queries)==false)
+        queries.add(TransactionQuery.queryDeleteTokenByUuid(auth.getUserId(), form.getUuid()));
+        queries.add(TransactionQuery.queryInsertToken(auth.getUserId(), form.getUuid(), token.getTokenId(), token.getToken(), true));
+        if(userCommonRepository.multiQueries(app.getScode(), queries)==false)
             return res.setError(EAllError.failed_update_token);
 
-        userCommonRepository.addEpid(form.getScode(), auth.getUserId(), form.getUuid(), form.getEpid());	//register epid
-        userCommonRepository.updateUserInfo(form.getScode(), auth.getUserId(), form.getOsType(), form.getOsVersion(), form.getAppVersion());
-        return res.setParam("token", token).setError(EAllError.ok);
+        userCommonRepository.addEpid(app.getScode(), auth.getUserId(), form.getUuid(), form.getEpid());	//register epid
+        userCommonRepository.updateUserInfo(app.getScode(), auth.getUserId(), form.getOsType(), form.getOsVersion(), form.getAppVersion());
+        return res.setParam("loginToken", token.getToken()).setParam("scode", SCodeManager.getBase64(app.getScode())).setError(EAllError.ok);
     };
 
-    ICommandFunction<AuthSession, ResponseData<EAllError>, AnonymousLoginForm> doAnonyLogin = (AuthSession authSession, ResponseData<EAllError> res, AnonymousLoginForm form) -> {
-        if( userCommonRepository.findUserName(form.getScode(), form.getUserName()) == true )
-            return res.setError(EAllError.already_exist_username);
+    ICommandFunction<AuthSession, ResponseData<EAllError>, AnonymousLoginForm> anonymousLogin = (AuthSession authSession, ResponseData<EAllError> res, AnonymousLoginForm form) -> {
+        AppTokenHelper app = new AppTokenHelper(form.getAppToken());  //check scode and init db pooling
+        if(app.getError() != EAllError.ok)
+            return res.setError(app.getError());
 
-        String userId = KeyGen.makeKeyWithSeq("anonyus");
-        String authQuery = TransactionQuery.qInsertUserIdPw(userId, form.getUserName(), form.getUserName()); //anonymous user는 uid(client defined)와 inappcode를 pw로 사용함(즉, passcode 없음)
-        RegisterForm registerForm = new UserForm().new RegisterForm(form.getUuid(), form.getUserName(), form);
+        if( userCommonRepository.findUserId(app.getScode(), form.getUserId()) == true )
+            return res.setError(EAllError.ExistUserId);
 
-        if(doRegisterUser(res, userId, form.getUserName(), authQuery, registerForm, true).getError() != EAllError.ok)
+        String userId = KeyGen.makeKeyWithSeq("anonymous:");
+        IdPwForm registerForm = new UserForm().new IdPwForm(form.getUuid(), form.getUserId(), form);
+        registerForm.setPw(form.getUserId());
+        if(doRegisterUser(res, app.getScode(), registerForm, true).getError() != EAllError.ok)
             return res;
 
-        UserAuthRec auth = userCommonRepository.getUserAuth(form.getScode(), userId);
+        UserAuthRec auth = userCommonRepository.getUserAuth(app.getScode(), userId);
         if(DbRecord.Empty == auth)
-            return res.setError(EAllError.not_exist_user);
-        UserTokenRec recToken = userCommonRepository.getUserTokenByUserId(form.getScode(), auth.getUserId());
+            return res.setError(EAllError.FailToCreateAnonymousAccount);
+        UserTokenRec recToken = userCommonRepository.getUserTokenByUserId(app.getScode(), auth.getUserId());
         if(recToken==DbRecord.Empty)
-            return res.setError(EAllError.unauthorized_userid);
+            return res.setError(EAllError.UnauthorizedAnonymousUserId);
 
-        userCommonRepository.addEpid(form.getScode(), auth.getUserId(), form.getUuid(), form.getEpid());	//register epid
-        userCommonRepository.updateUserInfo(form.getScode(), auth.getUserId(), form.getOsType(), form.getOsVersion(), form.getAppVersion());
-
+        Token token = new Token().enc(app.getScode(), auth.getUserId(), form.getUuid(), form.getAuthType());
+        userCommonRepository.addEpid(app.getScode(), auth.getUserId(), form.getUuid(), form.getEpid());	//register epid
+        userCommonRepository.updateUserInfo(app.getScode(), auth.getUserId(), form.getOsType(), form.getOsVersion(), form.getAppVersion());
         res.setUserid(userId);
-        return res.setError(EAllError.ok);
+        return res.setParam("loginToken", token.getToken()).setParam("scode", SCodeManager.getBase64(app.getScode())).setError(EAllError.ok);
     };
 
-    ICommandFunction<AuthSession, ResponseData<EAllError>, SigninForm> doSignin = (AuthSession authSession, ResponseData<EAllError> res, SigninForm form) -> {
-
+    ICommandFunction<AuthSession, ResponseData<EAllError>, SigninForm> userSignIn = (AuthSession authSession, ResponseData<EAllError> res, SigninForm form) -> {
         if(form.decode() == false)
-            return res.setError(EAllError.unknown_error);
-        if(form.isValidUserToken()==false )
-            return res.setError(EAllError.invalid_user_token);
+            return res.setError(EAllError.InvalidLoginToken);
+        if(form.isValidLoginToken()==false )    //uuid check at inside
+            return res.setError(EAllError.InvalidUUID);
 
-        UserTokenRec token = userCommonRepository.getUserTokenByTokenId(form.getScode(), form.getTokenId());
-        if(token==DbRecord.Empty)
-            return res.setError(EAllError.invalid_user_tokenid);
-        if(form.getUuidByToken().equals(token.getUuid())==false)
-            return res.setError(EAllError.invalid_or_expired_token);
+        UserTokenRec token = userCommonRepository.getUserToken(form.getLoginToken().getScode(), form.getLoginToken().getUserId(), form.getLoginToken().getUuid());
+        if(token==DbRecord.Empty || token.getToken().equals(form.getToken())== false)
+            return res.setError(EAllError.ExpiredOrDifferentLoginToken);
         if(token.isEnabled() == false)
-            return res.setError(EAllError.unauthorized_token);
+            return res.setError(EAllError.ExpiredLoginToken);
 
-        UserAuthRec auth = userCommonRepository.getUserAuth(form.getScode(), token.getUserId());
-        if(DbRecord.Empty == auth)
-            return res.setError(EAllError.unauthorized_userid);
+        UserAuthRec auth = userCommonRepository.getUserAuth(form.getLoginToken().getScode(), token.getUserId());
+        if(DbRecord.Empty == auth || auth.getLeftAt() != null)
+            return res.setError(EAllError.MightBeLeftUser);
 
-        UserRec user = userCommonRepository.getUser(form.getScode(), token.getUserId());
+        UserRec user = userCommonRepository.getUser(form.getLoginToken().getScode(), token.getUserId());
         if(DbRecord.Empty == user)
-            return res.setError(EAllError.not_exist_userinfo);
+            return res.setError(EAllError.MightBeLeftUser);
 
         if(authSession != null) {   //websocket일 경우 사용
-            authSession.putSession(form.getScode(), user);    //consider the sessionid to find instance when close
+            authSession.putSession(form.getLoginToken().getScode(), user);    //consider the sessionid to find instance when close
             authSession.getCh().attr(ChAttributeKey.getAuthSessionKey()).set(authSession);
             sessionManager.put(authSession);
         }
 
         res.setParam("userName", user.getUserName());
-        //res.setParam("userId", auth.getUserId()); // UserId는 외부에 노출하지 않도록 함
         res.setParam(""+user.getLastAt());
+        res.setParam("signinToken", new AuthToken().enc(form.getLoginToken().getScode(), auth.getUserId(), form.getUuid(), auth.getAuthType()));
         return res.setError(EAllError.ok);
     };
 
-    ICommandFunction<AuthSession, ResponseData<EAllError>, JsonNode> doUpdatePW = (AuthSession authSession, ResponseData<EAllError> res, JsonNode jNode) -> {
-        FormUpdateIdUser form = new UserForms().new FormUpdateIdUser(jNode);
-        if(form.getUuid() == null || form.getUuid().length() < 1)
-            return res.setError(EAllError.invalid_uuid);
-        if(form.getNewpw().length()<6)
-            return res.setError(EAllError.pass_more_than_6);
+    ICommandFunction<AuthSession, ResponseData<EAllError>, ChangePwForm> userChangePW = (AuthSession authSession, ResponseData<EAllError> res, ChangePwForm form) -> {
+        if(form.decode() == false)
+            return res.setError(EAllError.InvalidSigninToken);
+        if(form.getAuthToken().isExpired() == true)
+            return res.setError(EAllError.ExpiredSigninToken);
+        if(form.getNewPw().length()<8)
+            return res.setError(EAllError.passwordMoreThan8Characters);
 
-        UserAuthRec auth = userCommonRepository.getUserAuthByUserName(form.getScode(), form.getUserName());
+        UserAuthRec auth = userCommonRepository.getUserAuth(form.getAuthToken().getScode(), form.getAuthToken().getUserId());
         if(DbRecord.Empty == auth)
-            return res.setError(EAllError.not_exist_user);
-        if(auth.isSamePw(form.getPw())==false)
-            return res.setError(EAllError.mismatch_pw);
+            return res.setError(EAllError.MightBeLeftUser);
+        if(auth.isSamePw(form.getNewPw())==false)
+            return res.setError(EAllError.WrongPassword);
 
-        String tokenId = StrUtils.getSha1Uuid("tid");
-        String token = Crypto.AES256Cipher.getInst().enc(form.getScode(), form.getUserId()+ AsciiSplitter.ASS.UNIT+form.getUuid()+ AsciiSplitter.ASS.UNIT+form.getAuthtype());
-        List<String> queries = new ArrayList<>();
-        queries.add(TransactionQuery.queryDeleteTokenByUuid(auth.getUserId(), form.getUuid()));
-        queries.add(TransactionQuery.queryInsertToken(auth.getUserId(), form.getUuid(), tokenId, token, false));
-        queries.add(TransactionQuery.queryUpdatePw(form.getUserId(), form.getNewpw()));
-        if(userCommonRepository.multiQueries(form.getScode(), queries)==false)
-            return res.setError(EAllError.failed_change_pw);
-        return res.setParam("tid", tokenId).setParam("token", token).setError(EAllError.ok);
-    };
-
-    ICommandFunction<AuthSession, ResponseData<EAllError>, JsonNode> doUpdateEmail = (AuthSession authSession, ResponseData<EAllError> res, JsonNode jNode) -> {
-        FormUpdateEmailUser form = new UserForms().new FormUpdateEmailUser(jNode);
-        if(form.getUuid() == null || form.getUuid().length() < 1)
-            return res.setError(EAllError.invalid_uuid);
-        if(StrUtils.isEmail(form.getEmail()) == false)
-            return res.setError(EAllError.invalid_email_format);
-
-        UserAuthRec auth = userCommonRepository.getUserAuthByEmail(form.getScode(), form.getEmail());
-        if(DbRecord.Empty == auth)
-            return res.setError(EAllError.not_exist_user);
-        String tokenId = StrUtils.getSha1Uuid("tid");
-        String token = Crypto.AES256Cipher.getInst().enc(form.getScode(), form.getEmail()+ AsciiSplitter.ASS.UNIT+form.getUuid()+ASS.UNIT+form.getAuthtype());
-        String emailcode = StrUtils.getSha1Uuid("ec");
-
-        List<String> queries = new ArrayList<>();
-        queries.add(TransactionQuery.queryUpdateEmailCode(form.getEmail(), emailcode));
-        queries.add(TransactionQuery.queryInsertToken(auth.getUserId(), form.getUuid(), tokenId, token, false));
-        if(userCommonRepository.multiQueries(form.getScode(), queries)==false)
-            return res.setError(EAllError.failed_email_verify);
-
-        //[TODO] Send Email
-
-        return res.setParam("tid", tokenId).setParam("token", token).setError(EAllError.ok);
-    };
-
-    ICommandFunction<AuthSession, ResponseData<EAllError>, JsonNode> doUpdatePhoneNo = (AuthSession authSession, ResponseData<EAllError> res, JsonNode jNode) -> {
-        FormUpdatePhoneUser form = new UserForms().new FormUpdatePhoneUser(jNode);
-        if(form.getUuid() == null || form.getUuid().length() < 1)
-            return res.setError(EAllError.invalid_uuid);
-        if(StrUtils.isPhone(form.getPhone()) == false)
-            return res.setError(EAllError.invalid_phoneno_format);
-
-        UserAuthRec auth = userCommonRepository.getUserAuthByPhone(form.getScode(), form.getPhone());
-        if(DbRecord.Empty == auth)
-            return res.setError(EAllError.not_exist_user);
-        String tokenId = StrUtils.getSha1Uuid("tid");
-        String token = Crypto.AES256Cipher.getInst().enc(form.getScode(), form.getPhone()+ASS.UNIT+form.getUuid()+ASS.UNIT+form.getAuthtype());
-        String smscode = "" + (new Random().nextInt(9999-1000)+1000);
-
-        List<String> queries = new ArrayList<>();
-        queries.add(TransactionQuery.queryUpdateSMSCode(form.getPhone(), smscode));
-        queries.add(TransactionQuery.queryInsertToken(auth.getUserId(), form.getUuid(), tokenId, token, false));
-        if(userCommonRepository.multiQueries(form.getScode(), queries)==false)
-            return res.setError(EAllError.failed_phone_Verify);
-
-        //[TODO] Send SMS
-
-        return res.setParam("tid", tokenId).setParam("token", token).setError(EAllError.ok);
-    };
-
-    ICommandFunction<AuthSession, ResponseData<EAllError>, JsonNode> doVerifyPhoneNo = (AuthSession authSession, ResponseData<EAllError> res, JsonNode jNode) -> {
-        FormVerifyPhoneUser form = new UserForms().new FormVerifyPhoneUser(jNode);
-        if(form.getUuid() == null || form.getUuid().length() < 1)
-            return res.setError(EAllError.invalid_uuid);
-        if(StrUtils.isPhone(form.getPhone()) == false)
-            return res.setError(EAllError.invalid_phoneno_format);
-        if(form.getSmsCode()==null || form.getSmsCode().length() != 4)
-            return res.setError(EAllError.smscode_size_4);
-
-        UserAuthRec auth = userCommonRepository.getUserAuthByPhone(form.getScode(), form.getPhone());
-        if(DbRecord.Empty == auth)
-            return res.setError(EAllError.not_exist_user);
-        if(auth.isSameSmsCode(form.getSmsCode())==false)
-            return res.setError(EAllError.mismatch_smscode);
-
-        if(userCommonRepository.enableToken(form.getScode(), auth.getUserId(), form.getTokenId(), true) == false)
-            return res.setError(EAllError.unknown_error);
-
+        if( userCommonRepository.updatePw(form.getAuthToken().getScode(), form.getAuthToken().getUserId(), form.getNewPw())== false)
+            return res.setError(EAllError.FailToChangePW);
         return res.setError(EAllError.ok);
     };
 
-    private ResponseData<EAllError> doLoginByToken(ResponseData<EAllError> res, FormLogin form) {
-        if(form.isValidUuid()==false)
-            return res.setError(EAllError.invalid_user_token);
-
-        UserTokenRec token = userCommonRepository.getUserTokenByTokenId(form.getScode(), form.getTokenId());
-        if(token==DbRecord.Empty)
-            return res.setError(EAllError.invalid_user_tokenid);
-        if(form.getTokenUuid().equals(token.getUuid())==false)
-            return res.setError(EAllError.invalid_or_expired_token);
-
-        UserAuthRec auth = userCommonRepository.getUserAuth(form.getScode(), token.getUserId());
-        if(DbRecord.Empty == auth)
-            return res.setError(EAllError.unauthorized_userid);
-        if(auth.isSameUserName(form.getUserName())==false || auth.isSamePw(form.getPw())==false)
-            return res.setError(EAllError.invalid_user);
-
-        if(userCommonRepository.enableToken(form.getScode(), token.getUserId(), token.getTokenId(), true) == false)
-            return res.setError(EAllError.unknown_error);
-        userCommonRepository.updateUserInfo(form.getScode(), auth.getUserId(), form.getOsType(), form.getOsVersion(), form.getAppVersion());
+    ICommandFunction<AuthSession, ResponseData<EAllError>, JsonNode> userChangeEmail = (AuthSession authSession, ResponseData<EAllError> res, JsonNode jNode) -> {
+//        FormUpdateEmailUser form = new UserForms().new FormUpdateEmailUser(jNode);
+//        if(form.getUuid() == null || form.getUuid().length() < 1)
+//            return res.setError(EAllError.invalid_uuid);
+//        if(StrUtils.isEmail(form.getEmail()) == false)
+//            return res.setError(EAllError.invalid_email_format);
+//
+//        UserAuthRec auth = userCommonRepository.getUserAuthByEmail(form.getScode(), form.getEmail());
+//        if(DbRecord.Empty == auth)
+//            return res.setError(EAllError.not_exist_user);
+//        String tokenId = StrUtils.getSha1Uuid("tid");
+//        String token = Crypto.AES256Cipher.getInst().enc(form.getScode(), form.getEmail()+ AsciiSplitter.ASS.UNIT+form.getUuid()+ASS.UNIT+form.getAuthtype());
+//        String emailcode = StrUtils.getSha1Uuid("ec");
+//
+//        List<String> queries = new ArrayList<>();
+//        queries.add(TransactionQuery.queryUpdateEmailCode(form.getEmail(), emailcode));
+//        queries.add(TransactionQuery.queryInsertToken(auth.getUserId(), form.getUuid(), tokenId, token, false));
+//        if(userCommonRepository.multiQueries(form.getScode(), queries)==false)
+//            return res.setError(EAllError.failed_email_verify);
+//
+//        //[TODO] Send Email
+//
+//        return res.setParam("tid", tokenId).setParam("token", token).setError(EAllError.ok);
         return res.setError(EAllError.ok);
-    }
+    };
+
+    ICommandFunction<AuthSession, ResponseData<EAllError>, JsonNode> userChangePhone = (AuthSession authSession, ResponseData<EAllError> res, JsonNode jNode) -> {
+        //return res.setParam("tid", tokenId).setParam("token", token).setError(EAllError.ok);
+        return res.setError(EAllError.ok);
+    };
+
+    ICommandFunction<AuthSession, ResponseData<EAllError>, FindIdForm> userFindId = (AuthSession authSession, ResponseData<EAllError> res, FindIdForm form) -> {
+        if(form.getUserId().getBytes().length < 6)
+            return res.setError(EAllError.userIdMoreThan6Characters);
+        AppTokenHelper app = new AppTokenHelper(form.getAppToken());  //check scode and init db pooling
+        if(app.getError() != EAllError.ok)
+            return res.setError(app.getError());
+
+        if(userCommonRepository.findUserId(app.getScode(), form.getUserId()) == false )
+            return res.setError(EAllError.NotExistUserId);
+        return res.setError(EAllError.ok);
+    };
+
+    ICommandFunction<AuthSession, ResponseData<EAllError>, JsonNode> userVerifyEmail = (AuthSession authSession, ResponseData<EAllError> res, JsonNode jNode) -> {
+        return res.setError(EAllError.unknown_error);
+    };
+
+    ICommandFunction<AuthSession, ResponseData<EAllError>, JsonNode> userVerifySms = (AuthSession authSession, ResponseData<EAllError> res, JsonNode jNode) -> {
+//        FormVerifyPhoneUser form = new UserForms().new FormVerifyPhoneUser(jNode);
+//        if(form.getUuid() == null || form.getUuid().length() < 1)
+//            return res.setError(EAllError.invalid_uuid);
+//        if(StrUtils.isPhone(form.getPhone()) == false)
+//            return res.setError(EAllError.invalid_phoneno_format);
+//        if(form.getSmsCode()==null || form.getSmsCode().length() != 4)
+//            return res.setError(EAllError.smscode_size_4);
+//
+//        UserAuthRec auth = userCommonRepository.getUserAuthByPhone(form.getScode(), form.getPhone());
+//        if(DbRecord.Empty == auth)
+//            return res.setError(EAllError.not_exist_user);
+//        if(auth.isSameSmsCode(form.getSmsCode())==false)
+//            return res.setError(EAllError.mismatch_smscode);
+//
+//        if(userCommonRepository.enableToken(form.getScode(), auth.getUserId(), form.getTokenId(), true) == false)
+//            return res.setError(EAllError.unknown_error);
+
+        return res.setError(EAllError.ok);
+    };
 
 
 }

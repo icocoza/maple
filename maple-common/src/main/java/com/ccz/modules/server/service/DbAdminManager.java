@@ -33,7 +33,6 @@ public class DbAdminManager {
     private String adminUser;
     private String adminPassword;
 
-    private List<String> appTableQueryList = new ArrayList<>();
     private List<String> adminTableQueryList = new ArrayList<>();
 
     AdminCommonRepository adminCommonRepository = new AdminCommonRepository();
@@ -46,7 +45,6 @@ public class DbAdminManager {
         this.adminPassword = password;
 
         loadAdminTableQueries();
-        loadAppTableQueries();
     }
 
     public boolean createAdminDatabase() {
@@ -67,16 +65,12 @@ public class DbAdminManager {
         }
     }
 
-    public boolean createDatabaseOnInternal(String scode) {
-        return new DatabaseMaker().createDatabase(scode, adminHost, adminOptions, adminUser, adminPassword);
+    public boolean hasScode(String scode) {
+        return adminCommonRepository.getAdminApp(scode) != null;
     }
 
-    public boolean createDatabaseOnExternal(String scode, String host, String options, String user, String pw) {
-        return new DatabaseMaker().createDatabase(scode, host, options, user, pw);
-    }
-
-    public void removeDatabase(String dbName) {
-        DbConnMgr.getInst().removeConnectionPool(dbName);
+    public AdminAppRec getAppByScode(String scode) {
+        return adminCommonRepository.getAdminApp(scode);
     }
 
 
@@ -84,31 +78,11 @@ public class DbAdminManager {
         return adminCommonRepository.getAdminAppByScode(dbName);
     }
 
-    public boolean createTables(String scode) {
-        for(String query : appTableQueryList) {
-            if( DbHelper.nonSelect(scode, query) == false )
-                return false;
-        }
-        return true;
-    }
-
     public boolean createAdminTables() {
         for(String query : adminTableQueryList) {
             DbHelper.nonSelect(adminDbName, query);
         }
         return true;
-    }
-
-    private void loadAppTableQueries() throws IOException {
-        Collection<String> resources = ResourceList.getResources(Pattern.compile(".*\\.sql"));
-        for (String resource : resources) {
-            File file = new File(resource);
-            if (file.isFile() == true && file.getName().contains("app.sql") == true) {
-                String fileData = Files.asCharSource(file, Charsets.UTF_8).read();
-                String[] queries = fileData.split("\n\n", -1);
-                appTableQueryList = Arrays.stream(queries).collect(Collectors.toList());
-            }
-        }
     }
 
     private void loadAdminTableQueries() throws IOException {
@@ -124,16 +98,6 @@ public class DbAdminManager {
     }
 
     private class DatabaseMaker {
-
-        public boolean createDatabase(String dbName, String host, String options, String user, String pw) {
-            try {
-                DbConnMgr.getInst().createConnectionPool(dbName, "jdbc:mysql://"+host+"?"+options, user, pw, 2, 4);
-                return DbHelper.createDatabase(dbName, dbName);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
 
         public boolean createAdminDatabase() {
             try {

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = false)
 public class AdminTokenRec extends DbRecord {
 
-    private String email;
+    private String uid;
     private String token;
     private String remoteIp;
     private String reserved;
@@ -34,7 +34,7 @@ public class AdminTokenRec extends DbRecord {
     @Override
     protected DbRecord doLoad(DbReader rd, DbRecord r) {
         AdminTokenRec rec = (AdminTokenRec)r;
-        rec.email = rd.getString("email");
+        rec.uid = rd.getString("uid");
         rec.token = rd.getString("token");
         rec.remoteIp = rd.getString("remoteIp");
         rec.reserved = rd.getString("reserved");
@@ -54,50 +54,50 @@ public class AdminTokenRec extends DbRecord {
     }
 
     ////////////////// Queries /////////////////////
-    public boolean upsert(String email, String token, String remoteIp) {
-        if(getToken(email)==null)
-            return insert(email, token, remoteIp);
+    public boolean upsert(String uid, String token, String remoteIp) {
+        if(getToken(uid)==null)
+            return insert(uid, token, remoteIp);
         else
-            return update(email, token, remoteIp);
+            return update(uid, token, remoteIp);
     }
 
-    public boolean insert(String email, String token, String remoteIp) {
-        this.email = email;
+    public boolean insert(String uid, String token, String remoteIp) {
+        this.uid = uid;
         this.token = token;
         this.remoteIp = remoteIp;
-        String sql = String.format("INSERT INTO adminToken (email, token, remoteIp) "
-                + "VALUES('%s', '%s', '%s')", email, token, remoteIp);
+        String sql = String.format("INSERT INTO adminToken (uid, token, remoteIp) "
+                + "VALUES('%s', '%s', '%s')", uid, token, remoteIp);
         return super.insert(sql);
     }
-    public boolean update(String email, String token, String remoteIp) {
-        String sql = String.format("UPDATE adminApp SET token='%s', remoteIp='%s', issuedate=now(), lastAt=now() WHERE email='%s'",
-                token, remoteIp, email);
+    public boolean update(String uid, String token, String remoteIp) {
+        String sql = String.format("UPDATE adminApp SET token='%s', remoteIp='%s', issuedate=now(), lastAt=now() WHERE uid='%s'",
+                token, remoteIp, uid);
         return super.update(sql);
     }
 
-    public boolean update(String email, String token) {
-        String sql = String.format("UPDATE adminToken SET token='%s', lastAt=now() WHERE email='%s'",
-                token, email);
+    public boolean update(String uid, String token) {
+        String sql = String.format("UPDATE adminToken SET token='%s', lastAt=now() WHERE uid='%s'",
+                token, uid);
         return super.update(sql);
     }
 
-    public boolean delete(String email) {
-        String sql = String.format("DELETE FROM adminToken WHERE email='%s'", email);
+    public boolean delete(String uid) {
+        String sql = String.format("DELETE FROM adminToken WHERE uid='%s'", uid);
         return super.delete(sql);
     }
 
-    public AdminTokenRec getToken(String email) {
-        String sql = String.format("SELECT * FROM adminToken WHERE email='%s'", email);
+    public AdminTokenRec getToken(String uid) {
+        String sql = String.format("SELECT * FROM adminToken WHERE uid='%s'", uid);
         return (AdminTokenRec) super.getOne(sql);
     }
 
-    public boolean updateLasttime(String email) {
-        String sql = String.format("UPDATE adminToken SET lastAt=now() WHERE email='%s'", email);
+    public boolean updateLasttime(String uid) {
+        String sql = String.format("UPDATE adminToken SET lastAt=now() WHERE uid='%s'", uid);
         return super.update(sql);
     }
 
-    public boolean isAvailableToken(String email, String token, String remoteIp) {
-        String sql = String.format("SELECT * FROM adminToken WHERE email='%s' AND token='%s' AND remoteIp='%s'", email, token , remoteIp);
+    public boolean isAvailableToken(String uid, String token) {
+        String sql = String.format("SELECT * FROM adminToken WHERE uid='%s' AND token='%s' ORDER BY issuedAt DESC LIMIT 1", uid, token);
         return (AdminTokenRec) super.getOne(sql) != AdminTokenRec.Empty;
     }
 

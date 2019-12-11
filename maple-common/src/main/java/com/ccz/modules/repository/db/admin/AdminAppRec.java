@@ -14,13 +14,13 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = false)
 public class AdminAppRec extends DbRecord {
 
-    private String applicationId;
-    private String email;
+    private String appId;
+    private String uid;
     private String scode;
     private String title;
     private String token;
     private String description;
-    private EAdminAppStatus appStatus;
+    private EAdminAppStatus status;
     private String fcmId;
     private String fcmKey;
 
@@ -47,13 +47,13 @@ public class AdminAppRec extends DbRecord {
     @Override
     protected DbRecord doLoad(DbReader rd, DbRecord r) {
         AdminAppRec rec = (AdminAppRec)r;
-        rec.applicationId = rd.getString("applicationId");
-        rec.email = rd.getString("email");
+        rec.appId = rd.getString("appId");
+        rec.uid = rd.getString("uid");
         rec.scode = rd.getString("scode");
         rec.title = rd.getString("title");
         rec.token = rd.getString("token");
         rec.description = rd.getString("description");
-        rec.appStatus = EAdminAppStatus.getType(rd.getString("appStatus"));
+        rec.status = EAdminAppStatus.getType(rd.getString("status"));
         rec.fcmId = rd.getString("fcmId");
         rec.fcmKey = rd.getString("fcmKey");
 
@@ -80,21 +80,29 @@ public class AdminAppRec extends DbRecord {
     }
 
     ////////////////// Queries /////////////////////
-    public boolean insert(String scode, String applicationId, String email, String title, String token,
-                          String description, EAdminAppStatus appStatus, String fcmId, String fcmKey) {
-        String sql = String.format("INSERT INTO adminApp (applicationId, email, scode, title, token, description, appStatus, fcmId, fcmKey) "
+    public boolean insert(String scode, String appId, String uid, String title, String token,
+                          String description, EAdminAppStatus status, String fcmId, String fcmKey) {
+        String sql = String.format("INSERT INTO adminApp (appId, uid, scode, title, token, description, status, fcmId, fcmKey) "
                           + "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
-                          applicationId, email, scode, title, token, description, appStatus, fcmId, fcmKey);
+                          appId, uid, scode, title, token, description, status, fcmId, fcmKey);
         return super.insert(sql);
     }
 
-    public AdminAppRec getApp(String applicationId) {
-        String sql = String.format("SELECT * FROM adminApp WHERE applicationId='%s'", applicationId);
+    public boolean insert(String scode, String appId, String uid, String title, String token,
+                          String description, EAdminAppStatus status) {
+        String sql = String.format("INSERT INTO adminApp (appId, uid, scode, title, token, description, status) "
+                        + "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+                appId, uid, scode, title, token, description, status, fcmId, fcmKey);
+        return super.insert(sql);
+    }
+
+    public AdminAppRec getApp(String appId) {
+        String sql = String.format("SELECT * FROM adminApp WHERE appId='%s'", appId);
         return (AdminAppRec) super.getOne(sql);
     }
 
-    public AdminAppRec getApp(String email, String scode) {
-        String sql = String.format("SELECT * FROM adminApp WHERE email='%s' AND scode='%s'", email, scode);
+    public AdminAppRec getApp(String uid, String scode) {
+        String sql = String.format("SELECT * FROM adminApp WHERE uid='%s' AND scode='%s'", uid, scode);
         return (AdminAppRec) super.getOne(sql);
     }
 
@@ -103,54 +111,58 @@ public class AdminAppRec extends DbRecord {
         return (AdminAppRec) super.getOne(sql);
     }
 
-    public boolean updateApp(String email, String scode, String title,
-                             String description, EAdminAppStatus appStatus, String fcmId, String fcmKey) {
+    public boolean updateApp(String uid, String scode, String title,
+                             String description, EAdminAppStatus status, String fcmId, String fcmKey) {
         String sql = String.format("UPDATE adminApp SET title='%s', description='%s', "
-                        + "appStatus='%s', statusAt=now(), fcmId='%s', fcmKey='%s' "
-                        + "WHERE email='%s' AND scode='%s'",
-                title, description, appStatus.getValue(), fcmId, fcmKey, email, scode);
+                        + "status='%s', statusAt=now(), fcmId='%s', fcmKey='%s' "
+                        + "WHERE uid='%s' AND scode='%s'",
+                title, description, status.getValue(), fcmId, fcmKey, uid, scode);
         return super.update(sql);
     }
 
-    public boolean updateStatus(String email, String scode, EAdminAppStatus appStatus) {
-        String sql = String.format("UPDATE adminApp SET appStatus='%s', statusAt=now() WHERE email='%s' AND scode='%s'", appStatus.getValue(), email, scode, applicationId);
+    public boolean updatePush(String uid, String scode, String fcmId, String fcmKey) {
+        String sql = String.format("UPDATE adminApp SET fcmId='%s', fcmKey='%s', statusAt=now() WHERE uid='%s' AND scode='%s'", fcmId, fcmKey, uid, scode, appId);
         return super.update(sql);
     }
 
-    public boolean updateExternalDbInfo(String email, String scode, String dbHost, String dbOptions, String dbUserId, String dbPassword) {
+    public boolean updateStatus(String uid, String scode, EAdminAppStatus status) {
+        String sql = String.format("UPDATE adminApp SET status='%s', statusAt=now() WHERE uid='%s' AND scode='%s'", status.getValue(), uid, scode, appId);
+        return super.update(sql);
+    }
+
+    public boolean updateExternalDbInfo(String uid, String scode, String dbHost, String dbOptions, String dbUserId, String dbPassword) {
         String sql = String.format("UPDATE adminApp SET dbHost='%s', dbOptions='%s', dbUserId='%s', dbPassword='%s' " +
-                "WHERE email='%s' AND scode='%s'", dbHost, dbOptions, dbUserId, dbPassword, email, scode);
+                "WHERE uid='%s' AND scode='%s'", dbHost, dbOptions, dbUserId, dbPassword, uid, scode);
         return super.update(sql);
     }
 
-    public List<AdminAppRec> getList(EAdminAppStatus appStatus, int offset, int count) {
+    public List<AdminAppRec> getList(EAdminAppStatus status, int offset, int count) {
         String sql = String.format("SELECT * FROM adminApp ORDER BY statusAt DESC LIMIT %d, %d",
                 offset, count);
-        if(EAdminAppStatus.all != appStatus)
-            sql = String.format("SELECT * FROM adminApp WHERE appStatus='%s' ORDER BY statusAt DESC LIMIT %d, %d",
-                    appStatus.getValue(), offset, count);
+        if(EAdminAppStatus.ALL != status)
+            sql = String.format("SELECT * FROM adminApp WHERE status='%s' ORDER BY statusAt DESC LIMIT %d, %d",
+                    status.getValue(), offset, count);
         return super.getList(sql).stream().map(e->(AdminAppRec)e).collect(Collectors.toList());
     }
 
-    public List<AdminAppRec> getList(String email, EAdminAppStatus appStatus, int offset, int count) {
-        String sql = String.format("SELECT * FROM adminApp WHERE email='%s' ORDER BY statusAt DESC LIMIT %d, %d",
-                email, offset, count);
-        if(EAdminAppStatus.all != appStatus)
-            sql = String.format("SELECT * FROM adminApp WHERE email='%s' AND appStatus='%s' ORDER BY statusAt DESC LIMIT %d, %d",
-                    email, appStatus.getValue(), offset, count);
+    public List<AdminAppRec> getList(String uid, EAdminAppStatus status, int offset, int count) {
+        String sql = String.format("SELECT * FROM adminApp WHERE uid='%s' ORDER BY statusAt DESC LIMIT %d, %d",
+                uid, offset, count);
+        if(EAdminAppStatus.ALL != status)
+            sql = String.format("SELECT * FROM adminApp WHERE uid='%s' AND status='%s' ORDER BY statusAt DESC LIMIT %d, %d",
+                    uid, status.getValue(), offset, count);
         return super.getList(sql).stream().map(e->(AdminAppRec)e).collect(Collectors.toList());
     }
 
-    public int getAppCount(String email, EAdminAppStatus appStatus) {
-        if(EAdminAppStatus.all == appStatus)
-            return super.count(String.format("SELECT COUNT(*) FROM adminApp WHERE email='%s'", email));
-        return super.count(String.format("SELECT COUNT(*) FROM adminApp WHERE email='%s' AND appStatus='%s'", email, appStatus.getValue()));
+    public int getAppCount(String uid, EAdminAppStatus status) {
+        if(EAdminAppStatus.ALL == status)
+            return super.count(String.format("SELECT COUNT(*) FROM adminApp WHERE uid='%s'", uid));
+        return super.count(String.format("SELECT COUNT(*) FROM adminApp WHERE uid='%s' AND status='%s'", uid, status.getValue()));
     }
 
     public boolean hasSCode(String scode) {
         String sql = String.format("SELECT * FROM adminApp WHERE scode='%s'", scode);
         return super.exist(sql);
-
     }
 
 }
